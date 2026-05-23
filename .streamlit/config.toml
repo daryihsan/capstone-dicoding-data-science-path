@@ -1,0 +1,35 @@
+# ============================================================
+# RuangRasa Streamlit Configuration
+# ============================================================
+
+[theme]
+base = "light"
+primaryColor = "#4464AD"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8f9fa"
+textColor = "#000000"
+font = "sans serif"
+
+[client]
+# Raise error on slow IO operations
+showErrorDetails = true
+
+[server]
+# Enable CORS globally
+enableCORS = true
+# Enable X-Frame-Options header  
+enableXsrfProtection = true
+# Maximum file upload size (200 MB)
+maxUploadSize = 200
+# Maximum message size (200 MB)
+maxMessageSize = 200
+# Allow running from external IP
+headless = true
+
+[logger]
+# Log level: debug, info, warning, error, critical
+level = "info"
+
+[browser]
+# Gather usage stats
+gatherUsageStats = false
