@@ -21,19 +21,17 @@ from utils.constants import (
 # LOADER MODEL (dengan graceful fallback)
 # ──────────────────────────────────────────────
 
-# TensorFlow/Keras opsional — dashboard tetap jalan dengan mock mode
-# jika library tidak tersedia (misal: Python 3.14 / env terbatas)
-_TF_AVAILABLE = False
 try:
     import keras
     import tensorflow as tf
     _TF_AVAILABLE = True
 except ImportError:
-    keras = None  # type: ignore
-    tf = None     # type: ignore
+    _TF_AVAILABLE = False
+    keras = None
+    tf = None
 
 # ──────────────────────────────────────────────
-# CUSTOM LAYERS (hanya didefinisikan jika keras tersedia)
+# CUSTOM LAYERS (hanya jika TensorFlow tersedia)
 # ──────────────────────────────────────────────
 if _TF_AVAILABLE:
     @keras.utils.register_keras_serializable(package="RuangRasa")
@@ -60,6 +58,7 @@ if _TF_AVAILABLE:
             config = super(FeatureAttention, self).get_config()
             config.update({"units": self.units})
             return config
+
 
     @keras.utils.register_keras_serializable(package="RuangRasa")
     class TemporalContextAttention(keras.layers.Layer):
@@ -89,11 +88,9 @@ if _TF_AVAILABLE:
             config.update({"units": self.units})
             return config
 else:
-    # Placeholder classes agar referensi nama tidak crash
-    class FeatureAttention:  # type: ignore
-        pass
-    class TemporalContextAttention:  # type: ignore
-        pass
+    # Placeholder classes agar referensi tidak error
+    FeatureAttention = None
+    TemporalContextAttention = None
 
 _emotion_model   = None
 _screening_model = None
@@ -109,7 +106,7 @@ def _get_model_dir() -> str:
 def load_emotion_model():
     """
     Memuat model BiLSTM emosi dari folder jurnaling_model/.
-    Return None jika file tidak ada atau keras tidak tersedia.
+    Return None jika file tidak ada.
     """
     global _emotion_model, _tokenizer_obj, MODEL_STATUS
     if not _TF_AVAILABLE:
@@ -159,7 +156,7 @@ def load_emotion_model():
                     meta = _json.load(f)
                 tok_path_meta = meta.get("tokenizer_path", "")
                 if tok_path_meta and os.path.exists(tok_path_meta):
-                    from tensorflow.keras.preprocessing.text import tokenizer_from_json  # type: ignore
+                    from tensorflow.keras.preprocessing.text import tokenizer_from_json
                     with open(tok_path_meta, "r", encoding="utf-8") as f:
                         _tokenizer_obj = tokenizer_from_json(f.read())
 
@@ -169,7 +166,7 @@ def load_emotion_model():
 
 
 def load_screening_model():
-    """Memuat model DNN screening risiko. Return None jika file tidak ada atau keras tidak tersedia."""
+    """Memuat model DNN screening risiko. Return None jika file tidak ada."""
     global _screening_model, _scaler_obj, MODEL_STATUS
     if not _TF_AVAILABLE:
         return None
@@ -214,14 +211,10 @@ def preprocess_text(text: str) -> str:
 
 def _tokenize_and_pad(text: str, maxlen: int = 100) -> np.ndarray:
     """Tokenisasi dan padding menggunakan tokenizer tersimpan atau fallback sederhana."""
-    if _tokenizer_obj is not None:
+    if _TF_AVAILABLE and _tokenizer_obj is not None:
         seq = _tokenizer_obj.texts_to_sequences([text])
-        if _TF_AVAILABLE:
-            from tensorflow.keras.preprocessing.sequence import pad_sequences  # type: ignore
-            return pad_sequences(seq, maxlen=maxlen, padding="post")
-        # Fallback manual padding jika tensorflow tidak tersedia
-        padded = (seq[0] + [0] * maxlen)[:maxlen]
-        return np.array([padded])
+        from tensorflow.keras.preprocessing.sequence import pad_sequences
+        return pad_sequences(seq, maxlen=maxlen, padding="post")
     # Fallback: bag-of-words-position sederhana (hanya jika tokenizer tidak ada)
     words  = text.split()[:maxlen]
     idx    = [hash(w) % 10000 + 1 for w in words]
