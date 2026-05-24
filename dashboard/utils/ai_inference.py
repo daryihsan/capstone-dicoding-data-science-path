@@ -21,65 +21,79 @@ from utils.constants import (
 # LOADER MODEL (dengan graceful fallback)
 # ──────────────────────────────────────────────
 
-import keras
-import tensorflow as tf
+# TensorFlow/Keras opsional — dashboard tetap jalan dengan mock mode
+# jika library tidak tersedia (misal: Python 3.14 / env terbatas)
+_TF_AVAILABLE = False
+try:
+    import keras
+    import tensorflow as tf
+    _TF_AVAILABLE = True
+except ImportError:
+    keras = None  # type: ignore
+    tf = None     # type: ignore
 
 # ──────────────────────────────────────────────
-# CUSTOM LAYERS
+# CUSTOM LAYERS (hanya didefinisikan jika keras tersedia)
 # ──────────────────────────────────────────────
-@keras.utils.register_keras_serializable(package="RuangRasa")
-class FeatureAttention(keras.layers.Layer):
-    def __init__(self, units=16, **kwargs):
-        super(FeatureAttention, self).__init__(**kwargs)
-        self.units = units
-        self.dense = keras.layers.Dense(self.units, activation="relu", name="dense")
-        self.score = keras.layers.Dense(1, activation="sigmoid", name="score")
+if _TF_AVAILABLE:
+    @keras.utils.register_keras_serializable(package="RuangRasa")
+    class FeatureAttention(keras.layers.Layer):
+        def __init__(self, units=16, **kwargs):
+            super(FeatureAttention, self).__init__(**kwargs)
+            self.units = units
+            self.dense = keras.layers.Dense(self.units, activation="relu", name="dense")
+            self.score = keras.layers.Dense(1, activation="sigmoid", name="score")
 
-    def build(self, input_shape):
-        self.dense.build((None, 1))
-        self.score.build((None, self.units))
-        super(FeatureAttention, self).build(input_shape)
+        def build(self, input_shape):
+            self.dense.build((None, 1))
+            self.score.build((None, self.units))
+            super(FeatureAttention, self).build(input_shape)
 
-    def call(self, inputs):
-        expanded = tf.expand_dims(inputs, axis=-1)
-        h = self.dense(expanded)
-        a = self.score(h)
-        a = tf.squeeze(a, axis=-1)
-        return inputs * a
+        def call(self, inputs):
+            expanded = tf.expand_dims(inputs, axis=-1)
+            h = self.dense(expanded)
+            a = self.score(h)
+            a = tf.squeeze(a, axis=-1)
+            return inputs * a
 
-    def get_config(self):
-        config = super(FeatureAttention, self).get_config()
-        config.update({"units": self.units})
-        return config
+        def get_config(self):
+            config = super(FeatureAttention, self).get_config()
+            config.update({"units": self.units})
+            return config
 
+    @keras.utils.register_keras_serializable(package="RuangRasa")
+    class TemporalContextAttention(keras.layers.Layer):
+        """
+        Custom gating attention layer dari notebook 02_journaling_model.
+        Menggabungkan text repr dan context features dengan learned gate weight.
+        """
+        def __init__(self, units: int = 64, **kwargs):
+            super().__init__(**kwargs)
+            self.units  = units
+            self.W_text = keras.layers.Dense(units, use_bias=True)
+            self.W_ctx  = keras.layers.Dense(units, use_bias=True)
+            self.V      = keras.layers.Dense(1, use_bias=True)
 
-@keras.utils.register_keras_serializable(package="RuangRasa")
-class TemporalContextAttention(keras.layers.Layer):
-    """
-    Custom gating attention layer dari notebook 02_journaling_model.
-    Menggabungkan text repr dan context features dengan learned gate weight.
-    """
-    def __init__(self, units: int = 64, **kwargs):
-        super().__init__(**kwargs)
-        self.units  = units
-        self.W_text = keras.layers.Dense(units, use_bias=True)
-        self.W_ctx  = keras.layers.Dense(units, use_bias=True)
-        self.V      = keras.layers.Dense(1, use_bias=True)
+        def call(self, text_repr, context_repr):
+            text_proj = self.W_text(text_repr)
+            ctx_proj  = self.W_ctx(context_repr)
+            combined  = tf.nn.tanh(text_proj + ctx_proj)
+            score     = self.V(combined)
+            gate      = tf.nn.sigmoid(score)
+            text_out  = self.W_text(text_repr)
+            ctx_out   = self.W_ctx(context_repr)
+            return gate * text_out + (1 - gate) * ctx_out
 
-    def call(self, text_repr, context_repr):
-        text_proj = self.W_text(text_repr)
-        ctx_proj  = self.W_ctx(context_repr)
-        combined  = tf.nn.tanh(text_proj + ctx_proj)
-        score     = self.V(combined)
-        gate      = tf.nn.sigmoid(score)
-        text_out  = self.W_text(text_repr)
-        ctx_out   = self.W_ctx(context_repr)
-        return gate * text_out + (1 - gate) * ctx_out
-
-    def get_config(self):
-        config = super().get_config()
-        config.update({"units": self.units})
-        return config
+        def get_config(self):
+            config = super().get_config()
+            config.update({"units": self.units})
+            return config
+else:
+    # Placeholder classes agar referensi nama tidak crash
+    class FeatureAttention:  # type: ignore
+        pass
+    class TemporalContextAttention:  # type: ignore
+        pass
 
 _emotion_model   = None
 _screening_model = None
@@ -95,9 +109,11 @@ def _get_model_dir() -> str:
 def load_emotion_model():
     """
     Memuat model BiLSTM emosi dari folder jurnaling_model/.
-    Return None jika file tidak ada.
+    Return None jika file tidak ada atau keras tidak tersedia.
     """
     global _emotion_model, _tokenizer_obj, MODEL_STATUS
+    if not _TF_AVAILABLE:
+        return None
     if _emotion_model is not None:
         return _emotion_model
     try:
@@ -143,7 +159,7 @@ def load_emotion_model():
                     meta = _json.load(f)
                 tok_path_meta = meta.get("tokenizer_path", "")
                 if tok_path_meta and os.path.exists(tok_path_meta):
-                    from tensorflow.keras.preprocessing.text import tokenizer_from_json
+                    from tensorflow.keras.preprocessing.text import tokenizer_from_json  # type: ignore
                     with open(tok_path_meta, "r", encoding="utf-8") as f:
                         _tokenizer_obj = tokenizer_from_json(f.read())
 
@@ -153,8 +169,10 @@ def load_emotion_model():
 
 
 def load_screening_model():
-    """Memuat model DNN screening risiko. Return None jika file tidak ada."""
+    """Memuat model DNN screening risiko. Return None jika file tidak ada atau keras tidak tersedia."""
     global _screening_model, _scaler_obj, MODEL_STATUS
+    if not _TF_AVAILABLE:
+        return None
     if _screening_model is not None:
         return _screening_model
     try:
@@ -198,8 +216,12 @@ def _tokenize_and_pad(text: str, maxlen: int = 100) -> np.ndarray:
     """Tokenisasi dan padding menggunakan tokenizer tersimpan atau fallback sederhana."""
     if _tokenizer_obj is not None:
         seq = _tokenizer_obj.texts_to_sequences([text])
-        from tensorflow.keras.preprocessing.sequence import pad_sequences
-        return pad_sequences(seq, maxlen=maxlen, padding="post")
+        if _TF_AVAILABLE:
+            from tensorflow.keras.preprocessing.sequence import pad_sequences  # type: ignore
+            return pad_sequences(seq, maxlen=maxlen, padding="post")
+        # Fallback manual padding jika tensorflow tidak tersedia
+        padded = (seq[0] + [0] * maxlen)[:maxlen]
+        return np.array([padded])
     # Fallback: bag-of-words-position sederhana (hanya jika tokenizer tidak ada)
     words  = text.split()[:maxlen]
     idx    = [hash(w) % 10000 + 1 for w in words]
