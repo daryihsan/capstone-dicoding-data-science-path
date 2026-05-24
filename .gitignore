@@ -1,2 +1,28 @@
+# Proyek RuangRasa - Git Ignore
+
+# Proyek / Cache Khusus
 /capstone
 /capstone_jurnal.zip
+
+# Python build & cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Python Virtual Environments (Venv)
+.venv/
+venv/
+env/
+.env
+ENV/
+
+# Streamlit Secrets (Jangan sampai bocor jika ada API key)
+.streamlit/secrets.toml
+
+# System files (Windows / Mac)
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
