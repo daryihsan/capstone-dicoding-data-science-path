@@ -1563,13 +1563,6 @@ elif st.session_state.page == "Analitik":
                 </ul>
             </div>
             """, unsafe_allow_html=True)
-            
-            st.markdown("---")
-            st.subheader("Analisis Pola Waktu Jurnaling")
-            st.plotly_chart(chart_hourly_emotion(df), use_container_width=True)
-            c5, c6 = st.columns(2)
-            with c5: st.plotly_chart(chart_day_of_week(df), use_container_width=True)
-            with c6: st.plotly_chart(chart_heatmap_day_hour(df), use_container_width=True)
 
     # ── TAB 2: ANALISIS SCREENING KESEHATAN ──
     with tab_s:
@@ -1656,19 +1649,6 @@ elif st.session_state.page == "Analitik":
                 </ul>
             </div>
             """, unsafe_allow_html=True)
-            
-            st.markdown("---")
-            st.subheader("Analisis Demografis & Gaya Hidup Tambahan")
-            c1, c2 = st.columns(2)
-            with c1: st.plotly_chart(chart_age_distribution(df_scr), use_container_width=True)
-            with c2: st.plotly_chart(chart_gender_pie(df_scr), use_container_width=True)
-            c3, c4 = st.columns(2)
-            with c3: st.plotly_chart(chart_lifestyle_boxplot(df_scr), use_container_width=True)
-            with c4: st.plotly_chart(chart_sleep_category(df_scr), use_container_width=True)
-            c5, c6 = st.columns(2)
-            with c5: st.plotly_chart(chart_trauma_previously(df_scr), use_container_width=True)
-            with c6: st.plotly_chart(chart_screening_trend(df_scr), use_container_width=True)
-            st.plotly_chart(chart_correlation_heatmap(df_scr), use_container_width=True)
 
     # ── TAB 3: ANALISIS LINTAS DATASET (CROSS ANALYSIS) ──
     with tab_cross:
