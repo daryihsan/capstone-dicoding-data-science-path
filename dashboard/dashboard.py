@@ -1,5 +1,5 @@
-# ============================================================
-# RuangRasa — Dashboard Terpadu (Restrukturisasi User Journey)
+﻿# ============================================================
+# RuangRasa — Dashboard 
 # CC26-PSU309 | Dary Ihsan Amanullah
 # ============================================================
 
@@ -39,7 +39,7 @@ from utils.constants import (
     EMOTION_EMOJI, EMOTION_LABELS_ID, EMOTION_ORDER, HOTLINE_INFO,
     NB_AKURASI_FULL, NB_AKURASI_SEL, NB_CLASS_NEG, NB_CLASS_POS,
     NB_FITUR_AWAL, NB_FITUR_FINAL, NB_METRICS, NB_PENGURANGAN, NB_RATIO,
-    PRIMARY_COLOR, RISK_COLORS, RISK_LABELS, SENTIMENT_COLORS, STRESS_COLS,
+    PRIMARY_COLOR, SECONDARY_COLOR, RISK_COLORS, RISK_LABELS, SENTIMENT_COLORS, STRESS_COLS,
 )
 from utils.data_loader import load_data, load_screening_data
 from utils.ai_inference import (
@@ -62,7 +62,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# CUSTOM CSS — App-like feel
+# CUSTOM CSS
 # ============================================================
 st.markdown("""
 <style>
@@ -159,7 +159,7 @@ strong { color: #0F172A !important; font-weight: 600 !important; }
     margin-bottom: 6px;
 }
 .kpi-value {
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: 700 !important;
     color: #0F172A !important;
     line-height: 1.1;
@@ -230,9 +230,26 @@ strong { color: #0F172A !important; font-weight: 600 !important; }
     border: 1px solid #E2E8F0;
     border-top: 2px solid #2563EB;
 }
-[data-testid="stMetricValue"] { font-size: 1.6rem !important; font-weight: 700 !important; color: #0F172A !important; }
-[data-testid="stMetricLabel"] { color: #64748B !important; font-size: 0.8rem !important; font-weight: 500 !important; }
-[data-testid="stMetricDelta"]  { color: #64748B !important; }
+[data-testid="stMetric"] > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+[data-testid="stMetricLabel"] { 
+    width: 100%; 
+    color: #64748B !important; 
+    font-size: 0.8rem !important; 
+    font-weight: 500 !important; 
+}
+[data-testid="stMetricValue"] { 
+    margin-right: 12px;
+    font-size: 1.6rem !important; 
+    font-weight: 700 !important; 
+    color: #0F172A !important; 
+}
+[data-testid="stMetricDelta"] { 
+    color: #64748B !important; 
+}
 
 /* ── Journal entry ── */
 .journal-entry {
@@ -295,6 +312,44 @@ strong { color: #0F172A !important; font-weight: 600 !important; }
 /* ── Form inputs ── */
 [data-baseweb="select"] { color: #0F172A !important; }
 .stDateInput label { color: #374151 !important; font-weight: 500 !important; }
+
+/* Multiselect pills */
+span[data-baseweb="tag"] {
+    background-color: #4464AD !important;
+    color: white !important;
+}
+span[data-baseweb="tag"] span {
+    color: white !important;
+}
+span[data-baseweb="tag"] svg {
+    fill: white !important;
+}
+
+/* Primary buttons in main area */
+.block-container button[kind="primary"],
+.block-container [data-testid="stButton"] button[kind="primary"],
+.block-container .stButton > button[kind="primary"] {
+    background-color: #4464AD !important;
+    color: #FFFFFF !important;
+    border-color: #4464AD !important;
+}
+.block-container button[kind="primary"] *,
+.block-container [data-testid="stButton"] button[kind="primary"] *,
+.block-container .stButton > button[kind="primary"] * {
+    color: #FFFFFF !important;
+}
+.block-container button[kind="primary"]:hover,
+.block-container [data-testid="stButton"] button[kind="primary"]:hover,
+.block-container .stButton > button[kind="primary"]:hover {
+    background-color: #33508a !important;
+    border-color: #33508a !important;
+}
+
+/* Date input border */
+div[data-testid="stDateInput"] div[data-baseweb="input"] {
+    border: 1px solid #CBD5E1 !important;
+    border-radius: 4px;
+}
 
 /* ── Universal text ── */
 .block-container { color: #374151 !important; }
@@ -381,26 +436,15 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div style='padding:8px 16px 4px; font-size:0.68rem; font-weight:600; color:#94A3B8; letter-spacing:0.08em; text-transform:uppercase;'>DEMO INTERAKTIF</div>", unsafe_allow_html=True)
-    for p, label, icon in [("Beranda", "Beranda", "🏠"), ("Jurnal Emosi", "Demo: Analisis Emosi", "📓"), ("Screening", "Demo: Screening AI", "🔍")]:
+    st.markdown("<div style='padding:8px 16px 4px; font-size:0.68rem; font-weight:600; color:#94A3B8; letter-spacing:0.08em; text-transform:uppercase;'>NAVIGASI</div>", unsafe_allow_html=True)
+    for p, label, icon in [("Beranda", "Beranda", "🏠"), ("Analitik", "Analitik", "📊"), ("AI Lab", "AI Lab Demo AI", "🧪")]:
         is_active = st.session_state.page == p
         if st.button(f"{icon}  {label}", use_container_width=True, type="primary" if is_active else "secondary", key=f"nav_{p}"):
             st.session_state.page = p
             st.session_state.ai_result = None
             st.rerun()
 
-    st.markdown("<div style='padding:12px 16px 4px; font-size:0.68rem; font-weight:600; color:#94A3B8; letter-spacing:0.08em; text-transform:uppercase;'>RISET & ANALITIK</div>", unsafe_allow_html=True)
-    for p, label, icon in [("Analitik", "Analitik", "📊"), ("AI Lab", "AI Lab", "🧪")]:
-        is_active = st.session_state.page == p
-        if st.button(f"{icon}  {label}", use_container_width=True, type="primary" if is_active else "secondary", key=f"nav_{p}"):
-            st.session_state.page = p
-            st.session_state.ai_result = None
-            st.rerun()
-
-    # Preload models (already done at top)
-    pass
-
-    # Filter Analitik — hanya muncul saat halaman Analitik aktif
+    # Filter Analitik (hanya muncul saat halaman Analitik aktif)
     if st.session_state.page == "Analitik":
         st.markdown("<div style='height:1px;background:#E2E8F0;margin:12px 0;'></div>", unsafe_allow_html=True)
         with st.container(border=True):
@@ -418,10 +462,10 @@ with st.sidebar:
                     if isinstance(_date_range, (list, tuple)) and len(_date_range) == 2:
                         st.session_state["_sb_date_range"] = _date_range
                     else:
-                        st.warning("Pilih tanggal awal dan akhir secara lengkap.")
+                        st.info("Pilih tanggal awal dan akhir secara lengkap.")
                         st.session_state["_sb_date_range"] = (_MIN_DATE, _MAX_DATE)
                 except Exception:
-                    st.error("Filter tanggal gagal. Menampilkan semua data.")
+                    st.info("Filter tanggal gagal. Menampilkan semua data.")
                     st.session_state["_sb_date_range"] = (_MIN_DATE, _MAX_DATE)
                 _ALL_EM = sorted(df_all["label_emosi"].unique().tolist())
                 _sel_em = st.multiselect(
@@ -436,12 +480,11 @@ with st.sidebar:
                 st.session_state["_sb_date_range"] = None
                 st.session_state["_sb_sel_em"] = []
 
-    st.markdown("<div style='margin-top:32px;padding:0 16px 16px;font-size:0.72rem;color:#94A3B8;'>© 2025 CC26-PSU309 · RuangRasa<br>Dary Ihsan Amanullah</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top:32px;padding:0 16px 16px;font-size:0.72rem;color:#94A3B8;'>© 2026 CC26-PSU309 · RuangRasa<br>Dary Ihsan Amanullah</div>", unsafe_allow_html=True)
 
 # ============================================================
-# HELPERS — CHART FUNCTIONS (dipindah dari dashboard lama)
+# HELPERS — CHART FUNCTIONS
 # ============================================================
-
 def _plotly_clean_layout(fig, title=""):
     """Layout Plotly profesional — background putih, grid abu muda, font Inter."""
     fig.update_layout(
@@ -458,10 +501,8 @@ def _plotly_clean_layout(fig, title=""):
         fig.update_layout(title=dict(text=title, x=0.01, font=dict(color="#0F172A", size=14)))
     return fig
 
-
-
 def chart_emotion_bar(df):
-    counts = df["label_emosi"].value_counts().reindex(EMOTION_ORDER, fill_value=0)
+    counts = df["label_emosi"].value_counts()
     fig = go.Figure(go.Bar(
         x=[EMOTION_LABELS_ID.get(e, e) for e in counts.index],
         y=counts.values,
@@ -471,7 +512,6 @@ def chart_emotion_bar(df):
     _plotly_clean_layout(fig, "Distribusi Emosi")
     fig.update_layout(showlegend=False, yaxis_title="Jumlah Jurnal")
     return fig
-
 
 def chart_sentiment_pie(df):
     grp = df["emotion_group"].value_counts()
@@ -484,7 +524,6 @@ def chart_sentiment_pie(df):
     _plotly_clean_layout(fig, "Distribusi Sentimen")
     return fig
 
-
 def chart_daily_trend(df):
     daily = df.groupby("date").size().reset_index(name="count")
     fig = px.line(daily, x="date", y="count", color_discrete_sequence=[PRIMARY_COLOR])
@@ -492,29 +531,18 @@ def chart_daily_trend(df):
     fig.update_traces(line_width=2, fill="tozeroy", fillcolor="rgba(68,100,173,0.12)")
     return fig
 
-
-def chart_daily_emotion_trend(df):
-    daily_em = df.groupby(["date", "label_emosi"]).size().reset_index(name="count")
-    # Filter color map to only include emotions that exist in the data
-    color_map = {e: EMOTION_COLORS[e] for e in daily_em["label_emosi"].unique() if e in EMOTION_COLORS}
-    fig = px.line(daily_em, x="date", y="count", color="label_emosi",
-                  color_discrete_map=color_map,
-                  labels={"label_emosi": "Emosi", "count": "Jumlah"})
-    _plotly_clean_layout(fig, "Tren Emosi Harian")
-    return fig
-
-
 def chart_boxplot_text_length(df):
+    avg_order = df.groupby("label_emosi")["jumlah_kata"].mean().sort_values(ascending=False).index.tolist()
     fig = px.box(df, x="label_emosi", y="jumlah_kata",
                  color_discrete_sequence=[PRIMARY_COLOR],
+                 category_orders={"label_emosi": avg_order},
                  labels={"label_emosi": "Emosi", "jumlah_kata": "Jumlah Kata"})
     _plotly_clean_layout(fig, "Distribusi Panjang Jurnal per Emosi")
     fig.update_layout(showlegend=False)
     return fig
 
-
 def chart_avg_word_count(df):
-    avg = df.groupby("label_emosi")["jumlah_kata"].mean().reindex(EMOTION_ORDER)
+    avg = df.groupby("label_emosi")["jumlah_kata"].mean().sort_values(ascending=False)
     fig = go.Figure(go.Bar(
         x=[EMOTION_LABELS_ID.get(e, e) for e in avg.index],
         y=avg.values.round(1),
@@ -525,7 +553,6 @@ def chart_avg_word_count(df):
     fig.update_layout(showlegend=False)
     return fig
 
-
 def chart_hourly_emotion(df):
     hh = df.groupby(["hour", "label_emosi"]).size().reset_index(name="count")
     fig = px.bar(hh, x="hour", y="count", color="label_emosi",
@@ -533,7 +560,6 @@ def chart_hourly_emotion(df):
                  labels={"hour": "Jam", "count": "Jumlah", "label_emosi": "Emosi"})
     _plotly_clean_layout(fig, "Pola Penulisan per Jam")
     return fig
-
 
 def chart_day_of_week(df):
     d = df.groupby("day_of_week").size().reindex(DAY_ORDER, fill_value=0)
@@ -544,7 +570,6 @@ def chart_day_of_week(df):
     _plotly_clean_layout(fig, "Distribusi per Hari")
     return fig
 
-
 def chart_heatmap_day_hour(df):
     pivot = df.groupby(["day_of_week", "hour"]).size().unstack(fill_value=0)
     pivot = pivot.reindex(DAY_ORDER, fill_value=0)
@@ -554,9 +579,8 @@ def chart_heatmap_day_hour(df):
         y=[DAY_ORDER_ID[d] for d in pivot.index],
         colorscale="Blues",
     ))
-    _plotly_clean_layout(fig, "Heatmap Hari × Jam")
+    _plotly_clean_layout(fig, "Heatmap Hari x Jam")
     return fig
-
 
 def make_wordcloud_image(df, emotion):
     """Generate WordCloud as PIL Image, color-themed by emotion."""
@@ -579,7 +603,6 @@ def make_wordcloud_image(df, emotion):
     ).generate(text)
     return wc.to_image()
 
-
 def chart_top_words(df, emotion, top_n=15):
     sub = df[df["label_emosi"] == emotion]
     all_words = " ".join(sub["text_clean"].astype(str)).split()
@@ -594,7 +617,6 @@ def chart_top_words(df, emotion, top_n=15):
     _plotly_clean_layout(fig, f"Top {top_n} Kata — {EMOTION_LABELS_ID.get(emotion, emotion)}")
     return fig
 
-
 def chart_age_distribution(df_scr):
     ag = df_scr["age_group"].value_counts().sort_index()
     fig = px.bar(x=ag.index.astype(str), y=ag.values,
@@ -603,14 +625,12 @@ def chart_age_distribution(df_scr):
     _plotly_clean_layout(fig, "Distribusi Usia Responden")
     return fig
 
-
 def chart_gender_pie(df_scr):
     g = df_scr["Gender"].value_counts()
     fig = go.Figure(go.Pie(labels=g.index, values=g.values,
                            hole=0.4, marker_colors=["#4464AD", "#758EC9", "#95A5A6"]))
     _plotly_clean_layout(fig, "Distribusi Gender")
     return fig
-
 
 def chart_stress_radar(df_scr):
     means = df_scr[list(STRESS_COLS.keys())].mean()
@@ -634,7 +654,6 @@ def chart_stress_radar(df_scr):
     _plotly_clean_layout(fig, "Profil Stres Rata-rata")
     return fig
 
-
 def chart_lifestyle_boxplot(df_scr):
     cols = ["Sleep_Hours_Night", "Screen_Time_Hours_Day", "Social_Media_Hours_Day", "Work_Hours_Per_Week"]
     labels = {"Sleep_Hours_Night": "Tidur (j)", "Screen_Time_Hours_Day": "Screen Time (j)",
@@ -646,7 +665,6 @@ def chart_lifestyle_boxplot(df_scr):
     fig.update_layout(showlegend=False)
     return fig
 
-
 def chart_screening_trend(df_scr):
     t = df_scr.groupby(df_scr["timestamp"].dt.date).size().reset_index(name="count")
     t.columns = ["date", "count"]
@@ -655,15 +673,13 @@ def chart_screening_trend(df_scr):
     fig.update_traces(fill="tozeroy", fillcolor="rgba(68,100,173,0.12)")
     return fig
 
-
 def chart_sleep_category(df_scr):
     s = df_scr["sleep_category"].value_counts()
     fig = px.bar(x=s.index.astype(str), y=s.values,
-                 color_discrete_sequence=["#27AE60","#F4D03F","#E74C3C"],
+                 color_discrete_sequence=["#4464AD", "#758EC9", "#95A5A6"],
                  labels={"x": "Kategori Tidur", "y": "Jumlah"})
     _plotly_clean_layout(fig, "Kualitas Tidur Responden")
     return fig
-
 
 def chart_trauma_previously(df_scr):
     t = pd.DataFrame({
@@ -680,7 +696,6 @@ def chart_trauma_previously(df_scr):
     fig.update_layout(showlegend=False)
     return fig
 
-
 def chart_correlation_heatmap(df_scr):
     num_cols = ["Work_Stress_Level","Financial_Stress","Mood_Swings","Loneliness",
                 "Sleep_Hours_Night","Screen_Time_Hours_Day","Social_Media_Hours_Day",
@@ -691,7 +706,6 @@ def chart_correlation_heatmap(df_scr):
     _plotly_clean_layout(fig, "Matriks Korelasi Variabel Wellbeing")
     return fig
 
-
 def chart_class_imbalance():
     labels = ["Data Minoritas (Tidak Ada Masalah)", "Data Mayoritas (Ada Masalah)"]
     values = [NB_CLASS_NEG, NB_CLASS_POS]
@@ -701,7 +715,6 @@ def chart_class_imbalance():
     ))
     _plotly_clean_layout(fig, f"Ketidakseimbangan Kelas (Rasio {NB_RATIO}:1)")
     return fig
-
 
 def chart_model_performance():
     metrics = list(NB_METRICS.keys())
@@ -714,9 +727,8 @@ def chart_model_performance():
         textposition="outside"
     ))
     _plotly_clean_layout(fig, "Performa Model Setelah SMOTE (%)")
-    fig.update_layout(yaxis=dict(range=[0, 105]))
+    fig.update_layout(yaxis=dict(range=[0, 105]), xaxis=dict(tickangle=-30))
     return fig
-
 
 def chart_stress_histogram(df_scr, col):
     fig = px.histogram(df_scr, x=col, nbins=10,
@@ -725,30 +737,36 @@ def chart_stress_histogram(df_scr, col):
     _plotly_clean_layout(fig, f"Distribusi {STRESS_COLS.get(col, col)}")
     return fig
 
-
 def chart_faktor_risiko_utama():
     features_data = [
-        ("Feeling_Sad_Down", "Perasaan Sedih Berkepanjangan", "#003d5c", "Gejala Psikologis"),
-        ("Mood_Swings", "Perubahan Suasana Hati Drastis", "#003d5c", "Gejala Psikologis"),
-        ("Loneliness", "Tingkat Kesepian", "#dd4d88", "Sosial & Dukungan"),
-        ("Anxious_Nervous", "Kecemasan / Rasa Gugup Berlebih", "#003d5c", "Gejala Psikologis"),
-        ("Work_Stress_Level", "Tingkat Stres Kerja", "#954e9b", "Pekerjaan & Ekonomi"),
-        ("Financial_Stress", "Tekanan Keuangan", "#954e9b", "Pekerjaan & Ekonomi"),
-        ("Sleep_Hours_Night", "Kualitas & Durasi Tidur", "#464c89", "Gaya Hidup"),
-        ("Social_Support", "Dukungan Sosial", "#dd4d88", "Sosial & Dukungan"),
-        ("Trauma_History", "Riwayat Trauma", "#ff6b59", "Riwayat Kesehatan"),
-        ("Screen_Time_Hours_Day", "Waktu Layar per Hari", "#464c89", "Gaya Hidup"),
-        ("Social_Media_Hours_Day", "Penggunaan Media Sosial", "#464c89", "Gaya Hidup"),
-        ("Work_Hours_Per_Week", "Beban Jam Kerja", "#954e9b", "Pekerjaan & Ekonomi"),
-        ("Previously_Diagnosed", "Pernah Terdiagnosis Sebelumnya", "#ff6b59", "Riwayat Kesehatan"),
-        ("Age", "Usia", "#ffa600", "Demografis"),
-        ("Gender", "Jenis Kelamin", "#ffa600", "Demografis")
+        ("Smoking", "Kebiasaan Merokok", "#464c89", "Gaya Hidup", 0.0694),
+        ("Family_History_Mental_Illness", "Riwayat Keluarga dengan Gangguan Mental", "#ff6b59", "Riwayat Kesehatan", 0.0654),
+        ("Marital_Status", "Status Pernikahan", "#ffa600", "Demografis", 0.0595),
+        ("Remote_Work", "Mode Kerja (Remote/Hybrid)", "#ffa600", "Demografis", 0.0512),
+        ("Trauma_History", "Riwayat Trauma", "#ff6b59", "Riwayat Kesehatan", 0.0406),
+        ("Previously_Diagnosed", "Pernah Terdiagnosis Sebelumnya", "#ff6b59", "Riwayat Kesehatan", 0.0321),
+        ("Discuss_Mental_Health", "Keterbukaan Bicara soal Mental", "#dd4d88", "Sosial & Dukungan", 0.0268),
+        ("On_Therapy_Now", "Sedang Menjalani Terapi", "#ff6b59", "Riwayat Kesehatan", 0.0238),
+        ("Work_Stress_Level", "Tingkat Stres Kerja", "#954e9b", "Pekerjaan & Ekonomi", 0.0216),
+        ("Loneliness", "Tingkat Kesepian", "#dd4d88", "Sosial & Dukungan", 0.0207),
+        ("Financial_Stress", "Tekanan Keuangan", "#954e9b", "Pekerjaan & Ekonomi", 0.0195),
+        ("Ever_Sought_Treatment", "Pernah Mencari Pertolongan", "#ff6b59", "Riwayat Kesehatan", 0.0192),
+        ("Mood_Swings", "Perubahan Suasana Hati Drastis", "#003d5c", "Gejala Psikologis", 0.0185),
+        ("Social_Media_Hours_Day", "Penggunaan Media Sosial", "#464c89", "Gaya Hidup", 0.0183),
+        ("Screen_Time_Hours_Day", "Waktu Layar per Hari", "#464c89", "Gaya Hidup", 0.0171),
+        ("Sleep_Hours_Night", "Kualitas & Durasi Tidur", "#464c89", "Gaya Hidup", 0.0170),
     ]
-    scores = [9.2, 8.8, 8.5, 8.3, 7.9, 7.6, 7.4, 7.1, 6.8, 6.2, 5.9, 5.7, 5.5, 5.2, 5.0]
     
+    def truncate(text, max_words=2):
+        words = text.split()
+        if len(words) > max_words:
+            return " ".join(words[:max_words]) + "..."
+        return text
+
     df_feat = pd.DataFrame({
-        "Fitur": [f[1] for f in features_data],
-        "Skor": scores,
+        "Fitur": [truncate(f[1]) for f in features_data],
+        "Fitur_Full": [f[1] for f in features_data],
+        "Skor": [f[4] for f in features_data],
         "Warna": [f[2] for f in features_data],
         "Kategori": [f[3] for f in features_data]
     }).sort_values("Skor", ascending=True)
@@ -773,18 +791,31 @@ def chart_faktor_risiko_utama():
                 orientation="h",
                 name=cat,
                 marker_color=cat_colors[cat],
-                text=sub["Skor"].round(1),
-                textposition="outside"
+                text=sub["Skor"].apply(lambda x: f"{x:.4f}"),
+                textposition="outside",
+                hovertext=sub["Fitur_Full"],
+                customdata=sub["Kategori"],
+                hovertemplate="<b>%{hovertext}</b><br>Kategori: %{customdata}<br>Skor: %{x:.4f}<extra></extra>"
             ))
             
     _plotly_clean_layout(fig, "15 Faktor Pemicu Utama Masalah Kesehatan Mental")
     fig.update_layout(
         barmode="stack",
-        height=550,
-        legend=dict(title="Kategori Faktor", orientation="h", y=-0.15, x=0)
+        height=620,
+        legend=dict(
+            title="", 
+            orientation="h", 
+            y=-0.12, 
+            x=0, 
+            xanchor="left", 
+            yanchor="top",
+            traceorder="normal"
+        ),
+        xaxis=dict(range=[0, 0.08]),
+        yaxis=dict(categoryorder='total ascending'),
+        margin=dict(l=20, r=40, t=45, b=80)
     )
     return fig
-
 
 def chart_cross_emotion_stress(df_j, df_scr):
     if df_j.empty or df_scr.empty:
@@ -798,11 +829,10 @@ def chart_cross_emotion_stress(df_j, df_scr):
     grp = grp.reset_index()
     fig = px.bar(grp, x="label_emosi", y="avg_stress",
                  color_discrete_sequence=[PRIMARY_COLOR],
-                 labels={"label_emosi": "Emosi Dominan", "avg_stress": "Rata-rata Stres (0–10)"})
-    _plotly_clean_layout(fig, "Korelasi: Emosi Jurnal × Skor Stres Screening")
+                 labels={"label_emosi": "Emosi Dominan", "avg_stress": "Rata-rata Stres (0-10)"})
+    _plotly_clean_layout(fig, "Korelasi: Emosi Jurnal x Skor Stres Screening")
     fig.update_layout(showlegend=False)
     return fig
-
 
 def chart_cross_sleep_emotion(df_j, df_scr):
     if df_j.empty or df_scr.empty:
@@ -817,20 +847,18 @@ def chart_cross_sleep_emotion(df_j, df_scr):
     fig.update_layout(showlegend=False)
     return fig
 
-
 def chart_before_after_q3():
     fig = go.Figure()
     categories = ["Accuracy", "Recall", "Precision", "F1-Score"]
     before = [91.8, 93.2, 90.7, 91.8]
     after  = [91.4, 92.8, 90.3, 91.4]
     fig.add_trace(go.Bar(name="50 Fitur (Sebelum)", x=categories, y=before,
-                         marker_color="#E74C3C", text=[f"{v:.1f}%" for v in before], textposition="outside"))
+                         marker_color="#95A5A6", text=[f"{v:.1f}%" for v in before], textposition="outside"))
     fig.add_trace(go.Bar(name="15 Fitur (Sesudah)", x=categories, y=after,
-                         marker_color=PRIMARY_COLOR, text=[f"{v:.1f}%" for v in after], textposition="outside"))
+                         marker_color="#4464AD", text=[f"{v:.1f}%" for v in after], textposition="outside"))
     _plotly_clean_layout(fig, "Perbandingan Performa: 50 vs 15 Fitur")
-    fig.update_layout(barmode="group", yaxis=dict(range=[85, 100]))
+    fig.update_layout(barmode="group", yaxis=dict(range=[85, 100]), bargap=0.15, bargroupgap=0.05)
     return fig
-
 
 def chart_jurnal_word_count_hist(df, emotion):
     sub = df[df["label_emosi"] == emotion]
@@ -843,10 +871,10 @@ def chart_jurnal_word_count_hist(df, emotion):
     fig.update_layout(
         xaxis=dict(range=[0, 60], title="Jumlah Kata"),
         yaxis=dict(title="Frekuensi"),
-        showlegend=False
+        showlegend=False,
+        bargap=0.15
     )
     return fig
-
 
 # ============================================================
 # ██████████████ HALAMAN 1: BERANDA ████████████████████████
@@ -859,7 +887,7 @@ if st.session_state.page == "Beranda":
         </h1>
         <p style='color:#64748b; font-size:0.95rem; margin:0;'>
             Dashboard riset & analitik kesehatan mental berbasis AI. Eksplorasi insight dari <strong>9.700+ data jurnal emosi</strong>
-            dan <strong>1.000+ data screening</strong>, lengkap dengan demo model AI secara interaktif.
+            dan <strong>10.000 data screening</strong>, lengkap dengan demo model AI secara interaktif.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -885,7 +913,7 @@ if st.session_state.page == "Beranda":
     with col2:
         st.markdown(f"""<div class="kpi-card kpi-accent">
             <div class="kpi-label">Mood Dominan</div>
-            <div class="kpi-value" style="font-size:1.4rem;">{dom_id}</div>
+            <div class="kpi-value">{dom_id}</div>
             <div class="kpi-sub">Terbanyak di dataset</div>
         </div>""", unsafe_allow_html=True)
 
@@ -899,7 +927,7 @@ if st.session_state.page == "Beranda":
     with col3:
         st.markdown(f"""<div class="kpi-card kpi-warn">
             <div class="kpi-label">Data Screening</div>
-            <div class="kpi-value" style="font-size:1.7rem;">{scr_total:,}</div>
+            <div class="kpi-value">{scr_total:,}</div>
             <div class="kpi-sub">Total data penelitian</div>
         </div>""", unsafe_allow_html=True)
 
@@ -934,13 +962,13 @@ if st.session_state.page == "Beranda":
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ── Charts utama ──
-    col_a, col_b = st.columns([1.6, 1])
+    col_a, col_b = st.columns(2)
     with col_a:
         if has_journal:
-            st.plotly_chart(chart_daily_trend(df_all), use_container_width=True)
-    with col_b:
-        if has_journal:
             st.plotly_chart(chart_sentiment_pie(df_all), use_container_width=True)
+    with col_b:
+        if has_screen:
+            st.plotly_chart(chart_sleep_category(df_screening_all), use_container_width=True)
 
     # ── Insight AI ──
     if has_journal:
@@ -954,21 +982,16 @@ if st.session_state.page == "Beranda":
             dan <strong>{pos_pct:.1f}%</strong> positif. Emosi dominan adalah <strong>{dom_id}</strong>.
             Puncak aktivitas menulis terjadi pada pukul <strong>{peak_h:02d}:00</strong>,
             dengan rata-rata <strong>{avg_w:.1f} kata</strong> per entri jurnal.
-            {f"<br><br>Skor risiko rata-rata pengguna: <strong>{risk_score:.1f}/10</strong> — " + ("Perlu perhatian lebih." if risk_score >= 4 else "Dalam batas sehat.") if has_screen else ""}
         </div>""", unsafe_allow_html=True)
 
     # ── Quick Actions ──
     st.markdown("<br><p class='section-title'>Eksplorasi Dashboard</p>", unsafe_allow_html=True)
-    q1, q2, q3 = st.columns(3)
+    q1, q2 = st.columns(2)
     with q1:
-        if st.button("📓 Coba Demo Analisis Emosi", use_container_width=True, type="primary"):
-            st.session_state.page = "Jurnal Emosi"
+        if st.button("🧪 Coba Demo AI (Emosi & Screening)", use_container_width=True, type="primary"):
+            st.session_state.page = "AI Lab"
             st.rerun()
     with q2:
-        if st.button("🔍 Coba Demo Screening AI", use_container_width=True):
-            st.session_state.page = "Screening"
-            st.rerun()
-    with q3:
         if st.button("📊 Lihat Analitik Riset", use_container_width=True):
             st.session_state.page = "Analitik"
             st.rerun()
@@ -976,459 +999,312 @@ if st.session_state.page == "Beranda":
     # ── Disclaimer ──
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""<div class="disclaimer-box">
-        <strong>Disclaimer:</strong> RuangRasa adalah alat <em>dukungan awal</em> dan <em>screening</em>,
-        bukan pengganti diagnosis atau konsultasi profesional kesehatan mental.
-        Data bersifat anonim dan hanya digunakan untuk analisis personal.
+        <strong>Catatan Riset:</strong> Data yang ditampilkan di halaman ini bersumber dari dataset penelitian
+        (<strong>9.700+ jurnal emosi</strong> dan <strong>10.000 data screening</strong>).
+        Demo model AI tersedia di halaman <strong>AI Lab</strong>.
     </div>""", unsafe_allow_html=True)
-
 
 # ============================================================
 # ████████████ HALAMAN 2: JURNAL EMOSI + AI ████████████████
 # ============================================================
-elif st.session_state.page == "Jurnal Emosi":
-    st.markdown("""
-    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>Demo: Analisis Emosi AI</h2>
-    <p style='color:#64748b; margin-bottom:4px;'>Tulis teks dalam Bahasa Indonesia — model <strong>BiLSTM</strong> kami akan mengklasifikasikan emosi secara real-time.</p>
-    <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Model dilatih dari <strong>9.700+ entri jurnal emosi</strong> berbahasa Indonesia dengan 6 kelas emosi.</p>
-    """, unsafe_allow_html=True)
-
-    if not MODEL_STATUS["emotion"]:
-        st.info("Model AI belum tersedia di folder `models/`. Menggunakan **Mock Mode** (keyword-based). Hasil bersifat simulasi.")
-
-    col_input, col_history = st.columns([1.4, 1])
-
-    with col_input:
-        st.markdown('<p class="section-title">Tulis Jurnalmu</p>', unsafe_allow_html=True)
-        journal_text = st.text_area(
-            "Apa yang kamu rasakan hari ini?",
-            height=180,
-            placeholder="Contoh: Hari ini meeting-ku gagal total. Aku merasa malu dan frustrasi banget sama diri sendiri...",
-            label_visibility="collapsed",
-        )
-        char_count = len(journal_text)
-        st.caption(f"{char_count} karakter | min. 20 karakter untuk analisis")
-
-        col_btn1, col_btn2 = st.columns(2)
-        analyze_clicked = col_btn1.button("Analisis AI", use_container_width=True, type="primary",
-                                           disabled=(char_count < 20))
-        clear_clicked   = col_btn2.button("Bersihkan", use_container_width=True)
-
-        if clear_clicked:
-            st.session_state.ai_result = None
-            st.rerun()
-
-        if analyze_clicked and journal_text.strip():
-            with st.spinner("Menganalisis emosi…"):
-                result = predict_emotion(journal_text)
-            st.session_state.ai_result = result
-            # Simpan ke riwayat sesi
-            st.session_state.journal_history.append({
-                "text":      journal_text[:120] + ("…" if len(journal_text) > 120 else ""),
-                "emotion":   result.get("emotion", "Neutral"),
-                "sentiment": result.get("sentiment", "Neutral"),
-                "timestamp": pd.Timestamp.now().strftime("%H:%M"),
-            })
-
-        # ── Tampilkan Hasil AI ──
-        if st.session_state.ai_result:
-            r = st.session_state.ai_result
-            if "error" in r:
-                st.error(r["error"])
-            else:
-                em     = r["emotion"]
-                em_id  = r["emotion_id"]
-                sent   = r["sentiment"]
-                conf   = r["confidence"]
-                color  = EMOTION_COLORS.get(em, PRIMARY_COLOR)
-                sent_c = SENTIMENT_COLORS.get(sent, "#aaa")
-
-                with st.container(border=True):
-                    st.markdown(f"""
-                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
-                            <div style="width: 48px; height: 48px; border-radius: 50%; background-color: {color}; flex-shrink: 0;"></div>
-                            <div>
-                                <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Emosi Terdeteksi</div>
-                                <div style="font-size:1.7rem; font-weight:800; color:{color};">{em_id}</div>
-                                <div style="font-size:0.82rem; color:{sent_c};">{sent} · {conf:.1f}% confidence</div>
-                            </div>
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                    # Probability bar
-                    probs = r.get("probabilities", {})
-                    if probs:
-                        prob_df = pd.DataFrame([
-                            {"Emosi": EMOTION_LABELS_ID.get(e, e), "Prob (%)": v, "color": EMOTION_COLORS.get(e, "#aaa")}
-                            for e, v in probs.items()
-                        ]).sort_values("Prob (%)", ascending=True)
-                        fig_prob = go.Figure(go.Bar(
-                            x=prob_df["Prob (%)"], y=prob_df["Emosi"],
-                            orientation="h",
-                            marker_color=prob_df["color"].tolist(),
-                            text=[f"{v:.1f}%" for v in prob_df["Prob (%)"]],
-                            textposition="outside",
-                        ))
-                        _plotly_clean_layout(fig_prob, "Distribusi Probabilitas Emosi")
-                        fig_prob.update_layout(height=220, margin=dict(l=0, r=40, t=35, b=0),
-                                               xaxis=dict(range=[0, 110]))
-                        st.plotly_chart(fig_prob, use_container_width=True)
-
-                    st.markdown(f"""
-                        <div style="background:rgba(0,0,0,0.02); border-radius:8px; padding:14px 16px; margin-bottom:12px; border: 1px solid #e2e8f0;">
-                            <div style="font-size:0.75rem; color:#64748b; margin-bottom:6px; text-transform:uppercase; font-weight:600;">Validasi</div>
-                            <div style="color:#374151; font-style:italic; line-height:1.7;">"{r.get('validation', '')}"</div>
-                        </div>
-                        <div style="margin-bottom:8px;">
-                            <div style="font-size:0.75rem; color:#64748b; margin-bottom:8px; text-transform:uppercase; font-weight:600;">Rekomendasi</div>
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                    for rec in r.get("recommendations", []):
-                        st.markdown(f"- {rec}")
-
-                    st.markdown(f"""
-                        <div style="margin-top:12px; font-size:0.75rem; color:#475569; border-top: 1px solid #e2e8f0; padding-top: 8px;">
-                            Model: {r.get('model_used','—')} · Waktu inferensi: {r.get('inference_ms','—')} ms
-                            {" · <em>(Simulasi)</em>" if r.get('is_mock') else ""}
-                        </div>
-                    """, unsafe_allow_html=True)
-
-                # Tombol Simpan
-                if st.button("Simpan Jurnal", use_container_width=True):
-                    st.success("Jurnal berhasil disimpan ke riwayat sesi!")
-                    st.balloons()
-
-    with col_history:
-        st.markdown('<p class="section-title">Riwayat Sesi Ini</p>', unsafe_allow_html=True)
-        if not st.session_state.journal_history:
-            st.markdown("<p style='color:#475569; font-size:0.88rem;'>Belum ada jurnal di sesi ini.</p>", unsafe_allow_html=True)
-        else:
-            for entry in reversed(st.session_state.journal_history):
-                em_c = EMOTION_COLORS.get(entry["emotion"], PRIMARY_COLOR)
-                em_i = EMOTION_LABELS_ID.get(entry["emotion"], entry["emotion"])
-                st.markdown(f"""<div class="journal-entry">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span style="color:{em_c}; font-weight:700; font-size:0.82rem;">{em_i}</span>
-                        <span style="color:#475569; font-size:0.78rem;">{entry['timestamp']}</span>
-                    </div>
-                    <div style="color:#475569; font-size:0.85rem;">{entry['text']}</div>
-                </div>""", unsafe_allow_html=True)
-
-    # Dataset distribution — moved to Analitik page; not relevant here
-
-    st.markdown("""<div class="disclaimer-box" style="margin-top:12px;">
-        Analisis AI ini bersifat indikatif, bukan diagnosis klinis.
-        Jika kamu merasa tidak baik-baik saja secara berkepanjangan, pertimbangkan untuk berbicara dengan profesional.
-    </div>""", unsafe_allow_html=True)
-
-
-# ============================================================
-# ████████████ HALAMAN 3: SCREENING + AI ████████████████████
-# ============================================================
-elif st.session_state.page == "Screening":
-    st.markdown("""
-    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>Demo: Screening Risiko Mental AI</h2>
-    <p style='color:#64748b; margin-bottom:4px;'>Jawab 15 pertanyaan singkat — model <strong>Deep Neural Network</strong> kami akan memprediksi level risiko dan memberikan rekomendasi.</p>
-    <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Model dilatih dari <strong>1.000+ responden</strong>. Kuesioner dioptimasi dari 50 pertanyaan menjadi <strong>15 fitur esensial</strong> (akurasi turun hanya 0.4%).</p>
-    """, unsafe_allow_html=True)
-
-    if not MODEL_STATUS["screening"]:
-        st.info("Model screening dalam **Mock Mode**. Hasil menggunakan rule-based scoring.")
-
-    # ── Form Screening ──
-    # ── Form Screening ──
-    QUESTIONS = [
-        {"key": "Sleep_Hours_Night",         "label": "Apakah Anda mendapatkan tidur malam yang cukup lama dalam sehari? (1 = Sangat Kurang, 10 = Sangat Cukup)", "min": 1, "max": 10, "default": 5},
-        {"key": "Screen_Time_Hours_Day",     "label": "Seberapa sering kamu menggunakan gadget (smartphone, tab, PC) dalam sehari? (1 = Sangat Jarang, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Social_Media_Hours_Day",    "label": "Seberapa sering kamu bermain media sosial (Instagram, X, Tiktok) dalam sehari? (1 = Sangat Jarang, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Trauma_History",            "label": "Seberapa sering pikiran atau ingatan tentang pengalaman buruk masa lalu, bahkan trauma muncul kembali dan mengganggu aktivitasmu sehari-hari? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Previously_Diagnosed",      "label": "Seberapa besar dampak kondisi kesehatan mental yang pernah kamu alami (atau sedang kamu alami) terhadap kualitas hidupmu saat ini? (1 = Tidak Berdampak, 10 = Sangat Berdampak)", "min": 1, "max": 10, "default": 5},
-        {"key": "Work_Hours_Per_Week",       "label": "Seberapa banyak kamu menghabiskan waktu atau energi untuk bekerja dalam satu minggu? (1 = Sangat Sedikit, 10 = Sangat Banyak)", "min": 1, "max": 10, "default": 5},
-        {"key": "Work_Stress_Level",         "label": "Seberapa besar tekanan dan tuntutan pekerjaan membuat kamu merasa kewalahan, burnout, atau tidak mampu mengatasinya? (1 = Sangat Rendah, 10 = Sangat Tinggi)", "min": 1, "max": 10, "default": 5},
-        {"key": "Financial_Stress",          "label": "Seberapa sering masalah keuangan membuat kamu kehilangan tidur, sulit fokus, atau merasa putus asa tentang masa depan? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Mood_Swings",               "label": "Seberapa sering suasana hatimu berubah secara tiba-tiba dan drastis tanpa alasan yang jelas hingga mengganggu hubungan atau aktivitasmu? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Loneliness",                "label": "Seberapa sering kamu merasa tidak ada yang benar-benar memahami kamu, atau merasa sendirian meskipun berada di tengah orang banyak? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Feeling_Sad_Down",          "label": "Seberapa sering kamu merasa sedih, murung, atau putus asa dalam kehidupan sehari-hari? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Anxious_Nervous",           "label": "Seberapa sering kamu merasa cemas, tegang, atau gugup dalam menghadapi aktivitas? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Social_Support",            "label": "Seberapa besar dukungan sosial (dari keluarga, teman, atau lingkungan sekitar) yang kamu rasakan? (1 = Sangat Rendah, 10 = Sangat Tinggi)", "min": 1, "max": 10, "default": 5},
-        {"key": "Loss_Of_Interest",          "label": "Seberapa sering kamu kehilangan minat atau kesenangan dalam melakukan aktivitas sehari-hari yang biasa kamu sukai? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-        {"key": "Sleep_Trouble",             "label": "Seberapa sering kamu mengalami kesulitan tidur atau gangguan pola tidur (seperti sulit tidur atau sering terbangun)? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
-    ]
-
-    # ── Informasi Demografis ──
-    st.markdown('<p class="section-title">Informasi Demografis</p>', unsafe_allow_html=True)
-    col_age, col_gen = st.columns(2)
-    with col_age:
-        age_val = st.number_input("**Usia kamu saat ini?**", min_value=10, max_value=100, 
-                                  value=st.session_state.screening_answers.get("Age", 22), 
-                                  key="scr_Age")
-        st.session_state.screening_answers["Age"] = age_val
-    with col_gen:
-        gender_opts = ["Male", "Female", "Non-binary", "Prefer not to say"]
-        gender_idx = gender_opts.index(st.session_state.screening_answers.get("Gender", "Male")) if st.session_state.screening_answers.get("Gender", "Male") in gender_opts else 0
-        gender_val = st.radio("**Jenis Kelamin / Gender**", gender_opts, index=gender_idx, horizontal=True, key="scr_Gender")
-        st.session_state.screening_answers["Gender"] = gender_val
-
-    st.markdown("---")
-    st.markdown('<p class="section-title">Kuesioner Kesehatan Mental (Pilih angka 1 sampai 10)</p>', unsafe_allow_html=True)
-
-    n_total = len(QUESTIONS)
-    # Progress
-    answered = sum(1 for q in QUESTIONS if q["key"] in st.session_state.screening_answers)
-    pct = int(answered / n_total * 100)
-    st.markdown(f"""
-    <div style="margin-bottom:4px; font-size:0.82rem; color:#94a3b8;">{answered}/{n_total} pertanyaan kuesioner dijawab</div>
-    <div class="progress-outer"><div class="progress-inner" style="width:{pct}%;"></div></div>
-    """, unsafe_allow_html=True)
-
-    # ── Pertanyaan ──
-    for i, q in enumerate(QUESTIONS):
-        key   = q["key"]
-        label = f"**{i+1}. {q['label']}**"
-        val = st.slider(label, q["min"], q["max"],
-                        st.session_state.screening_answers.get(key, q["default"]),
-                        key=f"scr_{key}")
-        st.session_state.screening_answers[key] = val
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    col_sub, col_reset = st.columns([1.5, 1])
-    submit = col_sub.button("Lihat Hasil Screening", use_container_width=True, type="primary")
-    if col_reset.button("Reset Form", use_container_width=True):
-        st.session_state.screening_answers = {}
-        st.session_state.last_screening    = None
-        st.rerun()
-
-    if submit:
-        missing = [q["key"] for q in QUESTIONS if q["key"] not in st.session_state.screening_answers]
-        if missing or "Age" not in st.session_state.screening_answers or "Gender" not in st.session_state.screening_answers:
-            st.warning("Harap lengkapi semua informasi demografis dan jawab semua pertanyaan kuesioner sebelum melihat hasil.")
-        else:
-            with st.spinner("AI sedang menganalisis data kamu…"):
-                result = predict_risk(st.session_state.screening_answers)
-            st.session_state.last_screening = result
-
-    # ── Tampilkan Hasil ──
-    if st.session_state.last_screening:
-        r     = st.session_state.last_screening
-        level = r["risk_level"]
-        level_id = r["risk_level_id"]
-        score = r["risk_score"]
-        rcolor = RISK_COLORS[level]
-        badge_class = f"badge-{level.lower()}"
-
-        st.markdown("<hr>", unsafe_allow_html=True)
-        with st.container(border=True):
-            st.markdown(f"""
-                <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; background-color: {rcolor}; flex-shrink: 0;"></div>
-                    <div>
-                        <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Risk Level</div>
-                        <div style="font-size:2.2rem; font-weight:800; color:{rcolor};">{level_id.upper()}</div>
-                        <div style="font-size:1rem; color:#94a3b8;">Skor: {score:.1f}/10 · Confidence: {r.get('confidence',0):.1f}%</div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-            # Breakdown radar
-            breakdown = r.get("breakdown", {})
-            if breakdown:
-                cats = list(breakdown.keys())
-                vals = [breakdown[c] for c in cats]
-                vals_loop = vals + vals[:1]
-                cats_loop = cats + cats[:1]
-                fig_radar = go.Figure(go.Scatterpolar(
-                    r=vals_loop, theta=cats_loop, fill="toself",
-                    fillcolor=f"rgba{tuple(list(bytes.fromhex(rcolor[1:])) + [77])}",
-                    line=dict(color=rcolor, width=2),
-                ))
-                fig_radar.update_layout(
-                    polar=dict(radialaxis=dict(range=[0, 10], gridcolor="#e2e8f0", tickfont=dict(size=9, color="#475569"))),
-                    paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
-                    font=dict(color="#475569"),
-                    height=280, margin=dict(l=30, r=30, t=30, b=30),
-                    title=dict(text="Breakdown per Kategori", font=dict(size=13, color="#0f172a")),
-                )
-                st.plotly_chart(fig_radar, use_container_width=True)
-
-            # Rekomendasi
-            st.markdown('<div style="font-size:0.82rem; color:#64748b; text-transform:uppercase; margin-bottom:10px;">Rekomendasi Personal</div>', unsafe_allow_html=True)
-            for rec in r.get("recommendations", []):
-                st.markdown(f"- {rec}")
-
-            st.markdown(f"""
-                <div style="margin-top:12px; font-size:0.75rem; color:#475569; border-top: 1px solid #e2e8f0; padding-top: 8px;">
-                    Model: {r.get('model_used','—')} · Waktu inferensi: {r.get('inference_ms','—')} ms
-                    {" · <em>(Simulasi)</em>" if r.get('is_mock') else ""}
-                </div>
-            """, unsafe_allow_html=True)
-
-        # Hotline jika High
-        if level == "High":
-            st.markdown(f"""<div class="hotline-box" style="margin-top:16px;">
-                <strong>Kamu tidak sendirian.</strong> Pertimbangkan untuk menghubungi bantuan profesional:<br><br>
-                {HOTLINE_INFO}
-            </div>""", unsafe_allow_html=True)
-
-        st.markdown("""<div class="disclaimer-box" style="margin-top:12px;">
-            <strong>Disclaimer:</strong> Hasil screening ini <em>bukan diagnosis klinis</em>.
-            Ini adalah alat skrining awal berbasis pola data. Selalu konsultasikan kondisimu dengan tenaga profesional kesehatan mental.
-        </div>""", unsafe_allow_html=True)
-
-
-# ============================================================
-# ████████████ HALAMAN 4: AI LAB ████████████████████████████
-# ============================================================
 elif st.session_state.page == "AI Lab":
     st.markdown("""
-    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px; text-align:center;'>AI Lab</h2>
-    <p style='color:#64748b; margin-bottom:20px; text-align:center;'>Demo model AI secara teknis. Eksplorasi output model emosi dan screening secara langsung.</p>
+    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>AI Lab Demo Interaktif</h2>
+    <p style='color:#64748b; margin-bottom:4px;'>Uji coba langsung kedua model AI yang dikembangkan dalam riset ini secara real-time.</p>
+    <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Pilih tab untuk mulai demo masing-masing model.</p>
     """, unsafe_allow_html=True)
 
-    model_choice = st.selectbox("Pilih Model AI", ["Model Emosi (BiLSTM)", "Model Screening (DNN)"], label_visibility="visible")
+    tab_emosi, tab_screening = st.tabs(["Demo: Analisis Emosi (BiLSTM)", "Demo: Screening Risiko (DNN)"])
 
-    col_meta1, col_meta2, col_meta3 = st.columns(3)
-    if "Emosi" in model_choice:
-        col_meta1.metric("Arsitektur",   "BiLSTM + Attention")
-        col_meta2.metric("Output",       "6 kelas emosi")
-        col_meta3.metric("Status",       "Aktif" if MODEL_STATUS["emotion"] else "Mock")
-        meta_info = {"Model": "jurnaling_model/", "Tokenisasi": "Tokenizer (Bahasa Indonesia)",
-                     "Vocab Size": "10,500 kata", "Confidence Threshold": "75.0%"}
-    else:
-        col_meta1.metric("Arsitektur",   "Deep Neural Network")
-        col_meta2.metric("Output",       "Low / Medium / High")
-        col_meta3.metric("Status",       "Aktif" if MODEL_STATUS["screening"] else "Mock")
-        meta_info = {"Model": "screening_risk.keras", "Fitur Input": "15 fitur", "Output": "Risk level",
-                     "Scaler": "StandardScaler", "Trained on": "1,000 responden"}
-
-    with st.expander("Metadata Teknis Model"):
-        for k, v in meta_info.items():
-            st.markdown(f"- **{k}**: {v}")
-
-    st.markdown("---")
-
-    if "Emosi" in model_choice:
-        st.markdown("### Input Teks")
-        col_a, col_b = st.columns(2)
-        texts = [
-            col_a.text_area("Input A", height=130, placeholder="Contoh: Hari ini aku sangat senang karena berhasil…", key="lab_a"),
-            col_b.text_area("Input B (opsional, compare mode)", height=130, placeholder="Contoh: Aku takut dan cemas menghadapi besok…", key="lab_b"),
-        ]
-
-        if st.button("Jalankan Inferensi", type="primary", use_container_width=True):
-            results = []
-            for t in texts:
-                if t and len(t.strip()) >= 5:
-                    with st.spinner("Inferensi…"):
-                        results.append(predict_emotion(t))
-                else:
-                    results.append(None)
-
-            cols_res = st.columns(2)
-            for i, (res, col) in enumerate(zip(results, cols_res)):
-                if res and "error" not in res:
-                    em    = res["emotion"]
-                    color = EMOTION_COLORS.get(em, PRIMARY_COLOR)
-                    probs = res.get("probabilities", {})
-
-                    with col:
-                        with st.container(border=True):
-                            st.markdown(f"""
-                                <div style="font-size:1.1rem; font-weight:700; color:{color}; margin-bottom:10px;">
-                                    {res['emotion_id']} ({res['confidence']:.1f}%)
-                                </div>
-                                <div style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">
-                                    {res['sentiment']} · {res['model_used']} · {res['inference_ms']} ms
-                                </div>
-                            """, unsafe_allow_html=True)
-                            if probs:
-                                prob_df = pd.DataFrame(
-                                    [{"Emosi": EMOTION_LABELS_ID.get(e, e), "Prob (%)": v} for e, v in probs.items()]
-                                ).sort_values("Prob (%)", ascending=True)
-                                fig_p = go.Figure(go.Bar(
-                                    x=prob_df["Prob (%)"], y=prob_df["Emosi"],
-                                    orientation="h",
-                                    marker_color=[EMOTION_COLORS.get(e, PRIMARY_COLOR) for e in probs.keys()],
-                                    text=[f"{v:.1f}%" for v in prob_df["Prob (%)"]],
-                                    textposition="outside",
-                                ))
-                                _plotly_clean_layout(fig_p, "Probabilitas Emosi")
-                                fig_p.update_layout(height=180, margin=dict(l=0,r=40,t=20,b=0),
-                                                    xaxis=dict(range=[0,110]))
-                                st.plotly_chart(fig_p, use_container_width=True)
-
-    else:  # Screening model — tampilkan 15 pertanyaan lengkap (sama dengan halaman Screening)
+    # ============================================================
+    # TAB 1 DEMO ANALISIS EMOSI (BiLSTM)
+    # ============================================================
+    with tab_emosi:
         st.markdown("""
-        <p style='color:#64748b; font-size:0.9rem; margin-bottom:16px;'>
-            Isi kuesioner singkat di bawah ini. AI akan memprediksi level risiko kesehatan mentalmu.
-        </p>""", unsafe_allow_html=True)
+        <p style='color:#64748b; margin-bottom:4px;'>Tulis teks dalam Bahasa Indonesia model <strong>BiLSTM</strong> akan mengklasifikasikan emosi secara real-time.</p>
+        <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Model dilatih dari <strong>9.700+ entri jurnal emosi</strong> berbahasa Indonesia dengan 6 kelas emosi.</p>
+        """, unsafe_allow_html=True)
 
-        LAB_QUESTIONS = [
-            {"key": "Sleep_Hours_Night",      "label": "Apakah Anda mendapatkan tidur malam yang cukup lama dalam sehari? (1 = Sangat Kurang, 10 = Sangat Cukup)", "default": 5},
-            {"key": "Screen_Time_Hours_Day",  "label": "Seberapa sering kamu menggunakan gadget (smartphone, tab, PC) dalam sehari? (1 = Sangat Jarang, 10 = Sangat Sering)", "default": 5},
-            {"key": "Social_Media_Hours_Day", "label": "Seberapa sering kamu bermain media sosial (Instagram, X, Tiktok) dalam sehari? (1 = Sangat Jarang, 10 = Sangat Sering)", "default": 5},
-            {"key": "Trauma_History",         "label": "Seberapa sering pikiran atau ingatan tentang pengalaman buruk masa lalu, bahkan trauma muncul kembali dan mengganggu aktivitasmu? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 3},
-            {"key": "Previously_Diagnosed",   "label": "Seberapa besar dampak kondisi kesehatan mental yang pernah kamu alami terhadap kualitas hidupmu saat ini? (1 = Tidak Berdampak, 10 = Sangat Berdampak)", "default": 3},
-            {"key": "Work_Hours_Per_Week",    "label": "Seberapa banyak kamu menghabiskan waktu atau energi untuk bekerja dalam satu minggu? (1 = Sangat Sedikit, 10 = Sangat Banyak)", "default": 5},
-            {"key": "Work_Stress_Level",      "label": "Seberapa besar tekanan dan tuntutan pekerjaan membuat kamu merasa kewalahan atau burnout? (1 = Sangat Rendah, 10 = Sangat Tinggi)", "default": 5},
-            {"key": "Financial_Stress",       "label": "Seberapa sering masalah keuangan membuat kamu kehilangan tidur, sulit fokus, atau merasa putus asa? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-            {"key": "Mood_Swings",            "label": "Seberapa sering suasana hatimu berubah secara tiba-tiba dan drastis tanpa alasan yang jelas? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-            {"key": "Loneliness",             "label": "Seberapa sering kamu merasa tidak ada yang benar-benar memahami kamu, atau merasa sendirian? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-            {"key": "Feeling_Sad_Down",       "label": "Seberapa sering kamu merasa sedih, murung, atau putus asa dalam kehidupan sehari-hari? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-            {"key": "Anxious_Nervous",        "label": "Seberapa sering kamu merasa cemas, tegang, atau gugup dalam menghadapi aktivitas? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-            {"key": "Social_Support",         "label": "Seberapa besar dukungan sosial (dari keluarga, teman, atau lingkungan sekitar) yang kamu rasakan? (1 = Sangat Rendah, 10 = Sangat Tinggi)", "default": 6},
-            {"key": "Loss_Of_Interest",       "label": "Seberapa sering kamu kehilangan minat atau kesenangan dalam melakukan aktivitas yang biasa kamu sukai? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-            {"key": "Sleep_Trouble",          "label": "Seberapa sering kamu mengalami kesulitan tidur atau gangguan pola tidur? (1 = Tidak Pernah, 10 = Sangat Sering)", "default": 5},
-        ]
-
-        # Demografis
-        st.markdown('<p class="section-title">Informasi Demografis</p>', unsafe_allow_html=True)
-        lab_c_age, lab_c_gen = st.columns(2)
-        with lab_c_age:
-            lab_age = st.number_input("Usia kamu saat ini?", min_value=10, max_value=100, value=22, key="lab_age")
-        with lab_c_gen:
-            lab_gender = st.radio("Jenis Kelamin", ["Male", "Female", "Non-binary", "Prefer not to say"], index=0, horizontal=True, key="lab_gender")
-
-        st.markdown("---")
-        st.markdown('<p class="section-title">Kuesioner (Pilih angka 1 sampai 10)</p>', unsafe_allow_html=True)
-
-        # Render slider per pertanyaan
-        lab_answers = {"Age": lab_age, "Gender": lab_gender}
-        for i, q in enumerate(LAB_QUESTIONS):
-            lab_answers[q["key"]] = st.slider(
-                f"**{i+1}.** {q['label']}",
-                min_value=1, max_value=10,
-                value=q["default"],
-                key=f"lab_{q['key']}"
+        if not MODEL_STATUS["emotion"]:
+            st.info("Model AI belum tersedia di folder `models/`. Menggunakan **Mock Mode** (keyword-based). Hasil bersifat simulasi.")
+    
+        col_input, col_history = st.columns([1.4, 1])
+    
+        with col_input:
+            st.markdown('<p class="section-title">Tulis Teks untuk Dianalisis</p>', unsafe_allow_html=True)
+            journal_text = st.text_area(
+                "Teks jurnal",
+                height=180,
+                placeholder="Contoh: Hari ini meeting-ku gagal total. Aku merasa malu dan frustrasi banget sama diri sendiri...",
+                label_visibility="collapsed",
+                key="ailab_journal_text",
             )
-
-        if st.button("Prediksi Risiko", type="primary", use_container_width=True, key="lab_predict_btn"):
-            with st.spinner("Memprediksi…"):
-                r = predict_risk(lab_answers)
-            level  = r["risk_level"]
-            rcolor = RISK_COLORS[level]
-            level_id_upper = r['risk_level_id'].upper()
-            st.markdown(f"""<div class="result-card" style="margin-top:16px;">
-                <div style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
-                    <div style="width: 24px; height: 24px; border-radius: 50%; background-color: {rcolor}; flex-shrink: 0;"></div>
-                    <div style="font-size:1.4rem; font-weight:800; color:{rcolor};">
-                        Risk Level: {level_id_upper} ({r['risk_score']:.1f}/10)
-                    </div>
-                </div>
-                <div style="font-size:0.8rem; color:#64748b;">
-                    Confidence: {r.get('confidence',0):.1f}% · {r.get('model_used','—')} · {r.get('inference_ms','—')} ms
-                </div>
-            </div>""", unsafe_allow_html=True)
-            # Rekomendasi
-            recs_lab = r.get("recommendations", [])
-            if recs_lab:
-                st.markdown("**Rekomendasi:**")
-                for rec in recs_lab:
-                    st.markdown(f"- {rec}")
-
+            char_count = len(journal_text)
+            st.caption(f"{char_count} karakter | min. 20 karakter untuk analisis")
+    
+            col_btn1, col_btn2 = st.columns(2)
+            col_btn1, col_btn2 = st.columns(2)
+            analyze_clicked = col_btn1.button("Analisis AI", use_container_width=True, type="primary",
+                                                disabled=(char_count < 20), key="ailab_analyze_btn")
+            clear_clicked   = col_btn2.button("Bersihkan", use_container_width=True, key="ailab_clear_btn")
+    
+            if clear_clicked:
+                st.session_state.ai_result = None
+                st.rerun()
+    
+            if analyze_clicked and journal_text.strip():
+                with st.spinner("Menganalisis emosi…"):
+                    result = predict_emotion(journal_text)
+                st.session_state.ai_result = result
+                # Simpan ke riwayat sesi
+                st.session_state.journal_history.append({
+                    "text":      journal_text[:120] + ("…" if len(journal_text) > 120 else ""),
+                    "emotion":   result.get("emotion", "Neutral"),
+                    "sentiment": result.get("sentiment", "Neutral"),
+                    "timestamp": pd.Timestamp.now().strftime("%H:%M"),
+                })
+    
+            # ── Tampilkan Hasil AI ──
+            if st.session_state.ai_result:
+                r = st.session_state.ai_result
+                if "error" in r:
+                    st.error(r["error"])
+                else:
+                    em     = r["emotion"]
+                    em_id  = r["emotion_id"]
+                    sent   = r["sentiment"]
+                    conf   = r["confidence"]
+                    color  = EMOTION_COLORS.get(em, PRIMARY_COLOR)
+                    sent_c = SENTIMENT_COLORS.get(sent, "#aaa")
+    
+                    with st.container(border=True):
+                        st.markdown(f"""
+                            <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+                                <div style="width: 48px; height: 48px; border-radius: 50%; background-color: {color}; flex-shrink: 0;"></div>
+                                <div>
+                                    <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Emosi Terdeteksi</div>
+                                    <div style="font-size:1.7rem; font-weight:800; color:{color};">{em_id}</div>
+                                    <div style="font-size:0.82rem; color:{sent_c};">{sent} · {conf:.1f}% confidence</div>
+                                </div>
+                            </div>
+                        """, unsafe_allow_html=True)
+    
+                        # Probability bar
+                        probs = r.get("probabilities", {})
+                        if probs:
+                            prob_df = pd.DataFrame([
+                                {"Emosi": EMOTION_LABELS_ID.get(e, e), "Prob (%)": v, "color": EMOTION_COLORS.get(e, "#aaa")}
+                                for e, v in probs.items()
+                            ]).sort_values("Prob (%)", ascending=True)
+                            fig_prob = go.Figure(go.Bar(
+                                x=prob_df["Prob (%)"], y=prob_df["Emosi"],
+                                orientation="h",
+                                marker_color=prob_df["color"].tolist(),
+                                text=[f"{v:.1f}%" for v in prob_df["Prob (%)"]],
+                                textposition="outside",
+                            ))
+                            _plotly_clean_layout(fig_prob, "Distribusi Probabilitas Emosi")
+                            fig_prob.update_layout(height=220, margin=dict(l=0, r=40, t=35, b=0),
+                                                   xaxis=dict(range=[0, 110]))
+                            st.plotly_chart(fig_prob, use_container_width=True)
+    
+                        st.markdown(f"""
+                            <div style="background:rgba(0,0,0,0.02); border-radius:8px; padding:14px 16px; margin-bottom:12px; border: 1px solid #e2e8f0;">
+                                <div style="font-size:0.75rem; color:#64748b; margin-bottom:6px; text-transform:uppercase; font-weight:600;">Validasi</div>
+                                <div style="color:#374151; font-style:italic; line-height:1.7;">"{r.get('validation', '')}"</div>
+                            </div>
+                            <div style="margin-bottom:8px;">
+                                <div style="font-size:0.75rem; color:#64748b; margin-bottom:8px; text-transform:uppercase; font-weight:600;">Rekomendasi</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+    
+                        for rec in r.get("recommendations", []):
+                            st.markdown(f"- {rec}")
+    
+                        st.markdown(f"""
+                            <div style="margin-top:12px; font-size:0.75rem; color:#475569; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+                                Model: {r.get('model_used','—')} · Waktu inferensi: {r.get('inference_ms','—')} ms
+                                {" · <em>(Simulasi)</em>" if r.get('is_mock') else ""}
+                            </div>
+                        """, unsafe_allow_html=True)
+    
+                    # Tombol Simpan
+                    if st.button("Simpan Jurnal", use_container_width=True):
+                        st.success("Jurnal berhasil disimpan ke riwayat sesi!")
+                        st.balloons()
+    
+        with col_history:
+            st.markdown('<p class="section-title">Riwayat Sesi Ini</p>', unsafe_allow_html=True)
+            if not st.session_state.journal_history:
+                st.markdown("<p style='color:#475569; font-size:0.88rem;'>Belum ada analisis di sesi ini.</p>", unsafe_allow_html=True)
+            else:
+                for entry in reversed(st.session_state.journal_history):
+                    em_c = EMOTION_COLORS.get(entry["emotion"], PRIMARY_COLOR)
+                    em_i = EMOTION_LABELS_ID.get(entry["emotion"], entry["emotion"])
+                    st.markdown(f"""<div class="journal-entry">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                            <span style="color:{em_c}; font-weight:700; font-size:0.82rem;">{em_i}</span>
+                            <span style="color:#475569; font-size:0.78rem;">{entry['timestamp']}</span>
+                        </div>
+                        <div style="color:#475569; font-size:0.85rem;">{entry['text']}</div>
+                    </div>""", unsafe_allow_html=True)
+    
+        st.markdown("""<div class="disclaimer-box" style="margin-top:12px;">
+            Analisis AI ini bersifat indikatif dan digunakan untuk tujuan demonstrasi riset, bukan sebagai diagnosis klinis.
+        </div>""", unsafe_allow_html=True)
 
 # ============================================================
-# ████████████ HALAMAN 5: ANALITIK ██████████████████████████
+# TAB 2 DEMO SCREENING RISIKO (DNN)
+# ============================================================
+    with tab_screening:
+        st.markdown("""
+        <p style='color:#64748b; margin-bottom:4px;'>Jawab 15 pertanyaan singkat model <strong>Deep Neural Network</strong> kami akan memprediksi level risiko dan memberikan rekomendasi.</p>
+        <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Model dilatih dari <strong>1.000+ responden</strong>. Kuesioner dioptimasi dari 50 pertanyaan menjadi <strong>15 fitur esensial</strong> (akurasi turun hanya 0.4%).</p>
+        """, unsafe_allow_html=True)
+
+        if not MODEL_STATUS["screening"]:
+            st.info("Model screening dalam **Mock Mode**. Hasil menggunakan rule-based scoring.")
+    
+        # ── Form Screening ──
+        # ── Form Screening ──
+        SCR_QUESTIONS  = [
+            {"key": "Sleep_Hours_Night",         "label": "Apakah Anda mendapatkan tidur malam yang cukup lama dalam sehari? (1 = Sangat Kurang, 10 = Sangat Cukup)", "min": 1, "max": 10, "default": 5},
+            {"key": "Screen_Time_Hours_Day",     "label": "Seberapa sering kamu menggunakan gadget (smartphone, tab, PC) dalam sehari? (1 = Sangat Jarang, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Social_Media_Hours_Day",    "label": "Seberapa sering kamu bermain media sosial (Instagram, X, Tiktok) dalam sehari? (1 = Sangat Jarang, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Trauma_History",            "label": "Seberapa sering pikiran atau ingatan tentang pengalaman buruk masa lalu, bahkan trauma muncul kembali dan mengganggu aktivitasmu sehari-hari? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Previously_Diagnosed",      "label": "Seberapa besar dampak kondisi kesehatan mental yang pernah kamu alami (atau sedang kamu alami) terhadap kualitas hidupmu saat ini? (1 = Tidak Berdampak, 10 = Sangat Berdampak)", "min": 1, "max": 10, "default": 5},
+            {"key": "Work_Hours_Per_Week",       "label": "Seberapa banyak kamu menghabiskan waktu atau energi untuk bekerja dalam satu minggu? (1 = Sangat Sedikit, 10 = Sangat Banyak)", "min": 1, "max": 10, "default": 5},
+            {"key": "Work_Stress_Level",         "label": "Seberapa besar tekanan dan tuntutan pekerjaan membuat kamu merasa kewalahan, burnout, atau tidak mampu mengatasinya? (1 = Sangat Rendah, 10 = Sangat Tinggi)", "min": 1, "max": 10, "default": 5},
+            {"key": "Financial_Stress",          "label": "Seberapa sering masalah keuangan membuat kamu kehilangan tidur, sulit fokus, atau merasa putus asa tentang masa depan? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Mood_Swings",               "label": "Seberapa sering suasana hatimu berubah secara tiba-tiba dan drastis tanpa alasan yang jelas hingga mengganggu hubungan atau aktivitasmu? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Loneliness",                "label": "Seberapa sering kamu merasa tidak ada yang benar-benar memahami kamu, atau merasa sendirian meskipun berada di tengah orang banyak? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Feeling_Sad_Down",          "label": "Seberapa sering kamu merasa sedih, murung, atau putus asa dalam kehidupan sehari-hari? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Anxious_Nervous",           "label": "Seberapa sering kamu merasa cemas, tegang, atau gugup dalam menghadapi aktivitas? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Social_Support",            "label": "Seberapa besar dukungan sosial (dari keluarga, teman, atau lingkungan sekitar) yang kamu rasakan? (1 = Sangat Rendah, 10 = Sangat Tinggi)", "min": 1, "max": 10, "default": 5},
+            {"key": "Loss_Of_Interest",          "label": "Seberapa sering kamu kehilangan minat atau kesenangan dalam melakukan aktivitas sehari-hari yang biasa kamu sukai? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+            {"key": "Sleep_Trouble",             "label": "Seberapa sering kamu mengalami kesulitan tidur atau gangguan pola tidur (seperti sulit tidur atau sering terbangun)? (1 = Tidak Pernah, 10 = Sangat Sering)", "min": 1, "max": 10, "default": 5},
+        ]
+    
+        # ── Informasi Demografis ──
+        st.markdown('<p class="section-title">Informasi Demografis</p>', unsafe_allow_html=True)
+        col_age, col_gen = st.columns(2)
+        with col_age:
+            age_val = st.number_input("**Usia kamu saat ini?**", min_value=10, max_value=100, 
+                                      value=st.session_state.screening_answers.get("Age", 22), 
+                                      key="scr_Age")
+            st.session_state.screening_answers["Age"] = age_val
+        with col_gen:
+            gender_opts = ["Male", "Female", "Non-binary", "Prefer not to say"]
+            gender_idx = gender_opts.index(st.session_state.screening_answers.get("Gender", "Male")) if st.session_state.screening_answers.get("Gender", "Male") in gender_opts else 0
+            gender_val = st.radio("**Jenis Kelamin / Gender**", gender_opts, index=gender_idx, horizontal=True, key="ailab_scr_Gender")
+            st.session_state.screening_answers["Gender"] = gender_val
+    
+        st.markdown("---")
+        st.markdown('<p class="section-title">Kuesioner Kesehatan Mental (Pilih angka 1 sampai 10)</p>', unsafe_allow_html=True)
+    
+        n_total = len(SCR_QUESTIONS)
+        answered = sum(1 for q in SCR_QUESTIONS if q["key"] in st.session_state.screening_answers)
+        pct = int(answered / n_total * 100)
+        st.markdown(f"""
+        <div style="margin-bottom:4px; font-size:0.82rem; color:#94a3b8;">{answered}/{n_total} pertanyaan kuesioner dijawab</div>
+        <div class="progress-outer"><div class="progress-inner" style="width:{pct}%;"></div></div>
+        """, unsafe_allow_html=True)
+    
+        for i, q in enumerate(SCR_QUESTIONS):
+            key   = q["key"]
+            label = f"**{i+1}. {q['label']}**"
+            val = st.slider(label, q["min"], q["max"],
+                            st.session_state.screening_answers.get(key, q["default"]),
+                            key=f"ailab_scr_{key}")
+            st.session_state.screening_answers[key] = val
+    
+        st.markdown("<br>", unsafe_allow_html=True)
+    
+        col_sub, col_reset = st.columns([1.5, 1])
+        submit = col_sub.button("Lihat Hasil Screening", use_container_width=True, type="primary")
+        if col_reset.button("Reset Form", use_container_width=True):
+            st.session_state.screening_answers = {}
+            st.session_state.last_screening    = None
+            st.rerun()
+    
+        if submit:
+            missing = [q["key"] for q in SCR_QUESTIONS if q["key"] not in st.session_state.screening_answers]
+            if missing or "Age" not in st.session_state.screening_answers or "Gender" not in st.session_state.screening_answers:
+                st.warning("Harap lengkapi semua informasi demografis dan jawab semua pertanyaan kuesioner sebelum melihat hasil.")
+            else:
+                with st.spinner("AI sedang menganalisis data kamu…"):
+                    result = predict_risk(st.session_state.screening_answers)
+                st.session_state.last_screening = result
+    
+        # Tampilkan Hasil
+        if st.session_state.last_screening:
+            r     = st.session_state.last_screening
+            level = r["risk_level"]
+            level_id = r["risk_level_id"]
+            score = r["risk_score"]
+            rcolor = RISK_COLORS[level]
+            badge_class = f"badge-{level.lower()}"
+    
+            st.markdown("<hr>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(f"""
+                    <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background-color: {rcolor}; flex-shrink: 0;"></div>
+                        <div>
+                            <div style="font-size:0.75rem; color:#64748b; text-transform:uppercase; letter-spacing:.06em;">Risk Level</div>
+                            <div style="font-size:2.2rem; font-weight:800; color:{rcolor};">{level_id.upper()}</div>
+                            <div style="font-size:1rem; color:#94a3b8;">Skor: {score:.1f}/10 · Confidence: {r.get('confidence',0):.1f}%</div>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+    
+                # Breakdown radar
+                breakdown = r.get("breakdown", {})
+                if breakdown:
+                    cats = list(breakdown.keys())
+                    vals = [breakdown[c] for c in cats]
+                    vals_loop = vals + vals[:1]
+                    cats_loop = cats + cats[:1]
+                    fig_radar = go.Figure(go.Scatterpolar(
+                        r=vals_loop, theta=cats_loop, fill="toself",
+                        fillcolor=f"rgba{tuple(list(bytes.fromhex(rcolor[1:])) + [77])}",
+                        line=dict(color=rcolor, width=2),
+                    ))
+                    fig_radar.update_layout(
+                        polar=dict(radialaxis=dict(range=[0, 10], gridcolor="#e2e8f0", tickfont=dict(size=9, color="#475569"))),
+                        paper_bgcolor="#FFFFFF", plot_bgcolor="#FFFFFF",
+                        font=dict(color="#475569"),
+                        height=280, margin=dict(l=30, r=30, t=30, b=30),
+                        title=dict(text="Breakdown per Kategori", font=dict(size=13, color="#0f172a")),
+                    )
+                    st.plotly_chart(fig_radar, use_container_width=True)
+    
+                # Rekomendasi
+                st.markdown('<div style="font-size:0.82rem; color:#64748b; text-transform:uppercase; margin-bottom:10px;">Rekomendasi Personal</div>', unsafe_allow_html=True)
+                for rec in r.get("recommendations", []):
+                    st.markdown(f"- {rec}")
+    
+                st.markdown(f"""
+                    <div style="margin-top:12px; font-size:0.75rem; color:#475569; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+                        Model: {r.get('model_used','—')} · Waktu inferensi: {r.get('inference_ms','—')} ms
+                        {" · <em>(Simulasi)</em>" if r.get('is_mock') else ""}
+                    </div>
+                """, unsafe_allow_html=True)
+    
+            # Hotline jika High
+            if level == "High":
+                st.markdown(f"""<div class="hotline-box" style="margin-top:16px;">
+                    <strong>Kamu tidak sendirian.</strong> Pertimbangkan untuk menghubungi bantuan profesional:<br><br>
+                    {HOTLINE_INFO}
+                </div>""", unsafe_allow_html=True)
+    
+            st.markdown("""<div class="disclaimer-box" style="margin-top:12px;">
+                <strong>Disclaimer:</strong> Hasil screening ini <em>bukan diagnosis klinis</em>.
+                Ini adalah alat skrining awal berbasis pola data. Selalu konsultasikan kondisimu dengan tenaga profesional kesehatan mental.
+            </div>""", unsafe_allow_html=True)
+
+# ============================================================
+# ████████████ HALAMAN 3: ANALITIK ████████████████████████████
 # ============================================================
 elif st.session_state.page == "Analitik":
     st.markdown("""
@@ -1462,13 +1338,10 @@ elif st.session_state.page == "Analitik":
     else:
         df_scr = pd.DataFrame()
 
-
-
     # Sub-tabs
-    tab_j, tab_s, tab_cross = st.tabs([
+    tab_j, tab_s = st.tabs([
         "Analisis Jurnal Emosi",
-        "Analisis Screening Kesehatan",
-        "Analisis Lintas Dataset"
+        "Analisis Screening Kesehatan"
     ])
 
     # ── TAB 1: ANALISIS JURNAL EMOSI ──
@@ -1485,8 +1358,6 @@ elif st.session_state.page == "Analitik":
                 st.plotly_chart(chart_sentiment_pie(df), use_container_width=True)
             with c2: 
                 st.plotly_chart(chart_emotion_bar(df), use_container_width=True)
-            
-            st.plotly_chart(chart_daily_emotion_trend(df), use_container_width=True)
             
             st.markdown("""
             <div class="insight-box">
@@ -1510,7 +1381,7 @@ elif st.session_state.page == "Analitik":
                 st.plotly_chart(chart_avg_word_count(df), use_container_width=True)
             
             st.markdown("#### Sebaran Kata per Emosi")
-            sel_wc_em = st.selectbox("Pilih Emosi untuk Detail Histogram", ALL_EMOTIONS, 
+            sel_wc_em = st.selectbox("Pilih Emosi untuk Detail Histogram", sel_em, 
                                      format_func=lambda x: f"{EMOTION_LABELS_ID.get(x,x)} ({x})", key="wc_em_selector")
             st.plotly_chart(chart_jurnal_word_count_hist(df, sel_wc_em), use_container_width=True)
             
@@ -1530,7 +1401,7 @@ elif st.session_state.page == "Analitik":
             
             # --- Pertanyaan 3 ---
             st.markdown("### Q3 · Analisis Kata Kunci (Leksikon) & Tema")
-            sel_wc_em3 = st.selectbox("Pilih Emosi untuk Kata Populer & Top Kata", ALL_EMOTIONS,
+            sel_wc_em3 = st.selectbox("Pilih Emosi untuk Kata Populer & Top Kata", sel_em,
                                       format_func=lambda x: f"{EMOTION_LABELS_ID.get(x,x)} ({x})", key="wc_em_selector_q3")
             c7, c8 = st.columns(2)
             wc_img = make_wordcloud_image(df, sel_wc_em3)
@@ -1634,7 +1505,7 @@ elif st.session_state.page == "Analitik":
                 st.metric("Akurasi 15 Pertanyaan (Sesudah)", f"{NB_AKURASI_SEL:.1f}%", delta=f"-{delta:.1f}%")
             with c2:
                 st.metric("Pengurangan Pertanyaan", f"{NB_PENGURANGAN}%")
-                st.metric("Estimasi Waktu Pengisian", "6–8 menit (Sebelumnya ~20-25 menit)")
+                st.metric("Estimasi Waktu Pengisian", "6-8 menit (Sebelumnya ~20-25 menit)")
                 
             st.markdown("""
             <div class="insight-box">
@@ -1646,29 +1517,3 @@ elif st.session_state.page == "Analitik":
                 </ul>
             </div>
             """, unsafe_allow_html=True)
-
-    # ── TAB 3: ANALISIS LINTAS DATASET (CROSS ANALYSIS) ──
-    with tab_cross:
-        st.subheader("Korelasi Lintas Dataset (Jurnal Emosi × Screening)")
-        
-        f1 = chart_cross_emotion_stress(df_all, df_scr)
-        f2 = chart_cross_sleep_emotion(df_all, df_scr)
-        
-        col_c1, col_c2 = st.columns(2)
-        with col_c1:
-            if f1: st.plotly_chart(f1, use_container_width=True)
-            else: st.warning("Tidak cukup data yang cocok untuk korelasi emosi-stres.")
-        with col_c2:
-            if f2: st.plotly_chart(f2, use_container_width=True)
-            else: st.warning("Tidak cukup data yang cocok untuk korelasi emosi-tidur.")
-            
-        st.markdown("""
-        <div class="insight-box">
-            <strong>Analisis & Insight Korelasi Lintas Dataset:</strong><br>
-            <ul>
-                <li><strong>Korelasi Emosi & Skor Stres:</strong> Responden yang menulis jurnal dengan dominansi emosi negatif seperti <em>Anger (Marah)</em> dan <em>Sadness (Sedih)</em> secara konsisten memiliki tingkat stres kerja dan finansial yang lebih tinggi pada data screening.</li>
-                <li><strong>Hubungan Durasi Tidur & Suasana Hati:</strong> Kurang tidur (&lt;6 jam semalam) berkorelasi erat dengan tingginya entri jurnal beremosi <em>Fear (Takut)</em> dan <em>Sadness (Sedih)</em>. Sebaliknya, tidur cukup (7-8 jam) berkorelasi dengan emosi <em>Joy (Senang)</em> dan <em>Love (Cinta)</em>. Ini memperkuat pentingnya tidur sebagai pondasi kestabilan emosi.</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-

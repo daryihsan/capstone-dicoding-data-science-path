@@ -1,6 +1,5 @@
 # ============================================================
 # RuangRasa — AI Inference
-# Mendukung model .keras asli + fallback mock jika tidak tersedia
 # ============================================================
 
 import json
@@ -59,7 +58,6 @@ if _TF_AVAILABLE:
             config.update({"units": self.units})
             return config
 
-
     @keras.utils.register_keras_serializable(package="RuangRasa")
     class TemporalContextAttention(keras.layers.Layer):
         """
@@ -98,10 +96,8 @@ _tokenizer_obj   = None
 _scaler_obj      = None
 MODEL_STATUS     = {"emotion": False, "screening": False}
 
-
 def _get_model_dir() -> str:
     return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models")
-
 
 def load_emotion_model():
     """
@@ -159,11 +155,9 @@ def load_emotion_model():
                     from tensorflow.keras.preprocessing.text import tokenizer_from_json
                     with open(tok_path_meta, "r", encoding="utf-8") as f:
                         _tokenizer_obj = tokenizer_from_json(f.read())
-
         return _emotion_model
     except Exception:
         return None
-
 
 def load_screening_model():
     """Memuat model DNN screening risiko. Return None jika file tidak ada."""
@@ -174,7 +168,6 @@ def load_screening_model():
         return _screening_model
     try:
         import pickle
-        
         # Cek folder screening_model terlebih dahulu, lalu fallback ke file screening_risk.keras
         model_path = os.path.join(_get_model_dir(), "screening_model")
         if not os.path.exists(model_path):
@@ -194,12 +187,9 @@ def load_screening_model():
     except Exception:
         return None
 
-
-
 # ──────────────────────────────────────────────
 # TEXT PREPROCESSING
 # ──────────────────────────────────────────────
-
 def preprocess_text(text: str) -> str:
     """Membersihkan teks jurnal: lowercase, hapus karakter non-alfabet, normalisasi spasi."""
     text = text.lower()
@@ -207,7 +197,6 @@ def preprocess_text(text: str) -> str:
     text = re.sub(r"[^a-z\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
-
 
 def _tokenize_and_pad(text: str, maxlen: int = 100) -> np.ndarray:
     """Tokenisasi dan padding menggunakan tokenizer tersimpan atau fallback sederhana."""
@@ -221,11 +210,9 @@ def _tokenize_and_pad(text: str, maxlen: int = 100) -> np.ndarray:
     padded = idx + [0] * (maxlen - len(idx))
     return np.array([padded])
 
-
 # ──────────────────────────────────────────────
 # KEYWORD-BASED MOCK (fallback realistis)
 # ──────────────────────────────────────────────
-
 _KEYWORD_MAP = {
     "Anger":   ["marah", "kesal", "jengkel", "benci", "muak", "frustrasi", "dongkol", "emosi", "geram", "sebal"],
     "Sadness": ["sedih", "nangis", "menangis", "hancur", "kecewa", "patah", "putus asa", "murung", "galau", "sendu"],
@@ -237,7 +224,6 @@ _KEYWORD_MAP = {
 
 _SENTIMENT_MAP = {"Anger": "Negative", "Sadness": "Negative", "Fear": "Negative",
                   "Joy": "Positive",  "Love": "Positive",  "Neutral": "Neutral"}
-
 
 def _mock_predict_emotion(text: str) -> dict:
     """Prediksi emosi berbasis keyword matching (mock mode)."""
@@ -278,9 +264,8 @@ def _mock_predict_emotion(text: str) -> dict:
         "is_mock":     True,
     }
 
-
 # ──────────────────────────────────────────────
-# INTENSITY KEYWORDS (dari notebook 02_journaling_model)
+# INTENSITY KEYWORDS
 # ──────────────────────────────────────────────
 _INTENSIFIER_NEGATIVE = {
     "banget", "sangat", "sekali", "amat", "parah", "bgt",
@@ -301,12 +286,11 @@ _NEGATION_DETECT = {"tidak", "bukan", "belum", "jangan", "ga", "gak", "nggak", "
 _NEGATIVE_EMOTIONS = {"Sadness", "Fear", "Anger"}
 _POSITIVE_EMOTIONS = {"Joy", "Love"}
 
-
 def _compute_emotion_intensity(
     raw_text: str, emotion: str, model_confidence: float,
     sentiment_score: float, text_length: int, journal_hour: int
 ) -> dict:
-    """Hitung intensity emosi dinamis — sesuai notebook 02_journaling_model."""
+    """Hitung intensity emosi dinamis."""
     words_raw = raw_text.lower().split()
     base = model_confidence
 
@@ -344,8 +328,6 @@ def _compute_emotion_intensity(
     else:                        label = "sangat berat"
 
     return {"intensity_score": round(intensity_score, 3), "intensity_label": label}
-
-
 
 def predict_emotion(text: str) -> dict:
     """
@@ -425,7 +407,7 @@ def predict_emotion(text: str) -> dict:
             confidence = probs[dominant]
             sentiment  = _SENTIMENT_MAP[dominant]
 
-            # Hitung intensity sesuai notebook
+            # Hitung intensit
             journal_hour = now_dt.hour
             intensity    = _compute_emotion_intensity(
                 raw_text=text, emotion=dominant,
@@ -454,11 +436,9 @@ def predict_emotion(text: str) -> dict:
     # ── Fallback mock ──
     return _mock_predict_emotion(cleaned)
 
-
 # ──────────────────────────────────────────────
 # RISK SCORING (mock berbasis skor rata-rata)
 # ──────────────────────────────────────────────
-
 def _compute_risk_score(answers: dict) -> float:
     """Hitung risk score sederhana dari jawaban kuesioner (0–10)."""
     stress_keys  = ["Work_Stress_Level", "Financial_Stress", "Mood_Swings", "Loneliness"]
@@ -475,14 +455,12 @@ def _compute_risk_score(answers: dict) -> float:
     raw = (s * 0.4 + sy * 0.3 + sleep_penalty + trauma + diagnosed)
     return min(10.0, max(0.0, raw))
 
-
 def _score_to_level(score: float) -> str:
     if score < 4.0:
         return "Low"
     elif score < 7.0:
         return "Medium"
     return "High"
-
 
 def _mock_predict_risk(answers: dict) -> dict:
     """Prediksi risiko berbasis aturan (mock mode)."""
@@ -517,7 +495,6 @@ def _mock_predict_risk(answers: dict) -> dict:
         "is_mock":       True,
     }
 
-
 def predict_risk(answers: dict) -> dict:
     """
     Prediksi level risiko kesehatan mental dari jawaban kuesioner.
@@ -544,7 +521,7 @@ def predict_risk(answers: dict) -> dict:
 
             if is_multitask:
                 # ── Inferensi model multitask functional (.keras folder / SavedModel) ──
-                # 1. Ambil rating slider 1-10 dari answers
+                # Ambil rating slider 1-10 dari answers
                 def get_rating(key, default=5):
                     return float(answers.get(key, default))
                 
@@ -572,7 +549,7 @@ def predict_risk(answers: dict) -> dict:
                 mood_swings_val = get_rating("Mood_Swings", 5)
                 loneliness_val = get_rating("Loneliness", 5)
                 
-                # 2. Hitung derived risk features — HARUS SESUAI notebook add_engineered_features_to_single_user
+                # Hitung derived risk features — HARUS SESUAI notebook add_engineered_features_to_single_user
                 # work_stress_risk = (Work_Stress_Level - 1) / 9
                 # financial_risk = (Financial_Stress - 1) / 9
                 # mood_swings_risk = Mood_Swings / 10
@@ -597,15 +574,14 @@ def predict_risk(answers: dict) -> dict:
                 financial_r   = (financial_val - 1.0) / 9.0
                 mood_swings_r = mood_swings_val / 10.0
                 loneliness_r  = (loneliness_val - 1.0) / 9.0
-                
 
-                # 3. Derivasikan fitur berbasis waktu pengisian
+                # Derivasikan fitur berbasis waktu pengisian
                 now = pd.Timestamp.now()
                 scr_hour = float(now.hour)
                 scr_dayofweek = float(now.dayofweek)
                 scr_month = float(now.month)
                 
-                # 4. Susun input dictionary dengan format tensor/numpy yang sesuai
+                # Susun input dictionary dengan format tensor/numpy 
                 inputs_dict = {
                     "Gender": tf.constant([[gender_str]], dtype=tf.string),
                     "Age": np.array([[age_val]], dtype=np.float32),
@@ -632,7 +608,7 @@ def predict_risk(answers: dict) -> dict:
                     "loneliness_risk": np.array([[float(loneliness_r)]], dtype=np.float32),
                 }
                 
-                # 5. Jalankan inferensi model
+                # Jalankan inferensi model
                 outputs = model.predict(inputs_dict, verbose=0)
                 ms = int((time.time() - t0) * 1000)
                 
