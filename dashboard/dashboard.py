@@ -381,8 +381,8 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div style='padding:8px 16px 4px; font-size:0.68rem; font-weight:600; color:#94A3B8; letter-spacing:0.08em; text-transform:uppercase;'>PENGGUNA</div>", unsafe_allow_html=True)
-    for p, label, icon in [("Beranda", "Beranda", "🏠"), ("Jurnal Emosi", "Jurnal Emosi", "📓"), ("Screening", "Screening", "🔍")]:
+    st.markdown("<div style='padding:8px 16px 4px; font-size:0.68rem; font-weight:600; color:#94A3B8; letter-spacing:0.08em; text-transform:uppercase;'>DEMO INTERAKTIF</div>", unsafe_allow_html=True)
+    for p, label, icon in [("Beranda", "Beranda", "🏠"), ("Jurnal Emosi", "Demo: Analisis Emosi", "📓"), ("Screening", "Demo: Screening AI", "🔍")]:
         is_active = st.session_state.page == p
         if st.button(f"{icon}  {label}", use_container_width=True, type="primary" if is_active else "secondary", key=f"nav_{p}"):
             st.session_state.page = p
@@ -855,10 +855,11 @@ if st.session_state.page == "Beranda":
     st.markdown(f"""
     <div style='margin-bottom:20px;'>
         <h1 style='color:#0F172A; font-size:1.9rem; font-weight:800; margin-bottom:4px;'>
-            Halo, {st.session_state.user_name}!
+            RuangRasa — Analytics Platform
         </h1>
         <p style='color:#64748b; font-size:0.95rem; margin:0;'>
-            Selamat datang di RuangRasa — ruang amanmu untuk memahami kondisi emosional.
+            Dashboard riset & analitik kesehatan mental berbasis AI. Eksplorasi insight dari <strong>9.700+ data jurnal emosi</strong>
+            dan <strong>1.000+ data screening</strong>, lengkap dengan demo model AI secara interaktif.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -874,9 +875,9 @@ if st.session_state.page == "Beranda":
     total_jurnal = len(df_all) if has_journal else 0
     with col1:
         st.markdown(f"""<div class="kpi-card">
-            <div class="kpi-label">Total Jurnal</div>
+            <div class="kpi-label">Data Jurnal Emosi</div>
             <div class="kpi-value">{total_jurnal:,}</div>
-            <div class="kpi-sub">Semua pengguna</div>
+            <div class="kpi-sub">Total data penelitian</div>
         </div>""", unsafe_allow_html=True)
 
     dominant_em = df_all["label_emosi"].value_counts().idxmax() if has_journal else "—"
@@ -894,11 +895,12 @@ if st.session_state.page == "Beranda":
         session_id = EMOTION_LABELS_ID.get(session_em, session_em)
     else:
         session_id = "Belum ada"
+    scr_total = len(df_screening_all) if has_screen else 0
     with col3:
         st.markdown(f"""<div class="kpi-card kpi-warn">
-            <div class="kpi-label">Jurnal Terakhir</div>
-            <div class="kpi-value" style="font-size:1.3rem;">{session_id}</div>
-            <div class="kpi-sub">Dari sesi ini</div>
+            <div class="kpi-label">Data Screening</div>
+            <div class="kpi-value" style="font-size:1.7rem;">{scr_total:,}</div>
+            <div class="kpi-sub">Total data penelitian</div>
         </div>""", unsafe_allow_html=True)
 
     if st.session_state.last_screening:
@@ -956,19 +958,19 @@ if st.session_state.page == "Beranda":
         </div>""", unsafe_allow_html=True)
 
     # ── Quick Actions ──
-    st.markdown("<br><p class='section-title'>Mulai Sekarang</p>", unsafe_allow_html=True)
+    st.markdown("<br><p class='section-title'>Eksplorasi Dashboard</p>", unsafe_allow_html=True)
     q1, q2, q3 = st.columns(3)
     with q1:
-        if st.button("Tulis Jurnal Hari Ini", use_container_width=True, type="primary"):
+        if st.button("📓 Coba Demo Analisis Emosi", use_container_width=True, type="primary"):
             st.session_state.page = "Jurnal Emosi"
             st.rerun()
     with q2:
-        if st.button("Mulai Screening Baru", use_container_width=True):
+        if st.button("🔍 Coba Demo Screening AI", use_container_width=True):
             st.session_state.page = "Screening"
             st.rerun()
     with q3:
-        if st.button("Coba AI Lab", use_container_width=True):
-            st.session_state.page = "AI Lab"
+        if st.button("📊 Lihat Analitik Riset", use_container_width=True):
+            st.session_state.page = "Analitik"
             st.rerun()
 
     # ── Disclaimer ──
@@ -985,8 +987,9 @@ if st.session_state.page == "Beranda":
 # ============================================================
 elif st.session_state.page == "Jurnal Emosi":
     st.markdown("""
-    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>Jurnal Emosi</h2>
-    <p style='color:#64748b; margin-bottom:20px;'>Tulis apa yang kamu rasakan — AI akan menganalisis emosimu secara real-time.</p>
+    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>Demo: Analisis Emosi AI</h2>
+    <p style='color:#64748b; margin-bottom:4px;'>Tulis teks dalam Bahasa Indonesia — model <strong>BiLSTM</strong> kami akan mengklasifikasikan emosi secara real-time.</p>
+    <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Model dilatih dari <strong>9.700+ entri jurnal emosi</strong> berbahasa Indonesia dengan 6 kelas emosi.</p>
     """, unsafe_allow_html=True)
 
     if not MODEL_STATUS["emotion"]:
@@ -1111,14 +1114,7 @@ elif st.session_state.page == "Jurnal Emosi":
                     <div style="color:#475569; font-size:0.85rem;">{entry['text']}</div>
                 </div>""", unsafe_allow_html=True)
 
-    # Dataset distribution
-    if not df_all.empty:
-        st.markdown("<br><p class='section-title'>Distribusi Emosi Dataset</p>", unsafe_allow_html=True)
-        c1, c2 = st.columns(2)
-        with c1:
-            st.plotly_chart(chart_emotion_bar(df_all), use_container_width=True)
-        with c2:
-            st.plotly_chart(chart_daily_emotion_trend(df_all), use_container_width=True)
+    # Dataset distribution — moved to Analitik page; not relevant here
 
     st.markdown("""<div class="disclaimer-box" style="margin-top:12px;">
         Analisis AI ini bersifat indikatif, bukan diagnosis klinis.
@@ -1131,8 +1127,9 @@ elif st.session_state.page == "Jurnal Emosi":
 # ============================================================
 elif st.session_state.page == "Screening":
     st.markdown("""
-    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>Screening Kesehatan Mental</h2>
-    <p style='color:#64748b; margin-bottom:20px;'>Jawab 15 pertanyaan singkat — AI akan memprediksi level risiko dan memberikan rekomendasi personal.</p>
+    <h2 style='color:#0F172A; font-weight:800; margin-bottom:4px;'>Demo: Screening Risiko Mental AI</h2>
+    <p style='color:#64748b; margin-bottom:4px;'>Jawab 15 pertanyaan singkat — model <strong>Deep Neural Network</strong> kami akan memprediksi level risiko dan memberikan rekomendasi.</p>
+    <p style='color:#94a3b8; font-size:0.82rem; margin-bottom:20px;'>Model dilatih dari <strong>1.000+ responden</strong>. Kuesioner dioptimasi dari 50 pertanyaan menjadi <strong>15 fitur esensial</strong> (akurasi turun hanya 0.4%).</p>
     """, unsafe_allow_html=True)
 
     if not MODEL_STATUS["screening"]:
