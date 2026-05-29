@@ -41,8 +41,8 @@ if not df_all.empty:
     ALL_EMOTIONS = sorted(df_all["label_emosi"].unique().tolist())
 
     with st.sidebar:
-        st.markdown("---")
-        st.markdown("### Filter Analitik (Jurnal)")
+        st.markdown("<hr style='margin: 16px 0 16px 0; border: none; border-top: 1px solid #E2E8F0;'>", unsafe_allow_html=True)
+        st.markdown("<div style='font-family:\"Plus Jakarta Sans\", sans-serif; font-size: 1rem; font-weight: 700; color: #0F172A; margin-bottom: 12px;'>Filter Analitik (Jurnal)</div>", unsafe_allow_html=True)
         _dr = st.date_input("Rentang Waktu Jurnal", [MIN_DATE, MAX_DATE], min_value=MIN_DATE, max_value=MAX_DATE)
         _se = st.multiselect("Emosi Spesifik", options=ALL_EMOTIONS, default=ALL_EMOTIONS)
 

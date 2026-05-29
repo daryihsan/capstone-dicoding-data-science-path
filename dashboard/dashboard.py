@@ -376,19 +376,23 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 
-# Define pages using st.navigation
-pages = {
-    "NAVIGASI": [
-        st.Page("views/home.py", title="Beranda", icon="🏠"),
-        st.Page("views/analytics.py", title="Analitik", icon="📊"),
-        st.Page("views/ai_lab.py", title="AI Lab Demo AI", icon="🧪"),
-    ]
-}
+    st.markdown("<div style='padding:8px 16px 4px; font-size:0.68rem; font-weight:600; color:#94A3B8; letter-spacing:0.08em; text-transform:uppercase;'>NAVIGASI</div>", unsafe_allow_html=True)
 
-pg = st.navigation(pages)
+# Define pages using st.Page
+page_home = st.Page("views/home.py", title="Beranda", icon="🏠")
+page_analytics = st.Page("views/analytics.py", title="Analitik", icon="📊")
+page_ai_lab = st.Page("views/ai_lab.py", title="AI Lab Demo AI", icon="🧪")
 
 with st.sidebar:
-    st.markdown("<div style='margin-top:32px;padding:0 16px 16px;font-size:0.72rem;color:#94A3B8;'>© 2026 CC26-PSU309 · RuangRasa<br>Dary Ihsan Amanullah</div>", unsafe_allow_html=True)
+    st.page_link(page_home)
+    st.page_link(page_analytics)
+    st.page_link(page_ai_lab)
+
+pages = [page_home, page_analytics, page_ai_lab]
+pg = st.navigation(pages, position="hidden")
 
 # Run the selected page
 pg.run()
+
+with st.sidebar:
+    st.markdown("<div style='margin-top:32px;padding:0 16px 16px;font-size:0.72rem;color:#94A3B8;'>© 2026 CC26-PSU309 · RuangRasa<br>Dary Ihsan Amanullah</div>", unsafe_allow_html=True)
