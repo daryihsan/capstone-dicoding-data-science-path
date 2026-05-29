@@ -37,8 +37,8 @@ import streamlit as st
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from utils.constants import (
-    ACCENT_COLOR, DAY_ORDER, DAY_ORDER_ID, EMOTION_COLORS, EMOTION_COLORMAPS,
-    EMOTION_EMOJI, EMOTION_LABELS_ID, EMOTION_ORDER, HOTLINE_INFO,
+    ACCENT_COLOR, EMOTION_COLORS, EMOTION_COLORMAPS,
+    EMOTION_EMOJI, EMOTION_LABELS_ID, EMOTION_ORDER,
     NB_AKURASI_FULL, NB_AKURASI_SEL, NB_CLASS_NEG, NB_CLASS_POS,
     NB_FITUR_AWAL, NB_FITUR_FINAL, NB_METRICS, NB_PENGURANGAN, NB_RATIO,
     PRIMARY_COLOR, SECONDARY_COLOR, RISK_COLORS, RISK_LABELS, SENTIMENT_COLORS, STRESS_COLS,
@@ -279,17 +279,6 @@ strong { color: #0F172A !important; font-weight: 600 !important; }
 .progress-outer { background: #F1F5F9; border-radius: 20px; height: 6px; margin: 6px 0 16px; }
 .progress-inner { background: linear-gradient(90deg, #2563EB, #059669); border-radius: 20px; height: 6px; transition: width 0.3s ease; }
 
-/* ── Hotline ── */
-.hotline-box {
-    background: #FFF5F5;
-    border: 1px solid #FECACA;
-    border-radius: 8px;
-    padding: 14px 18px;
-    color: #991B1B !important;
-    font-size: 0.875rem;
-}
-.hotline-box strong { color: #7F1D1D !important; font-weight: 600 !important; }
-
 /* ── Buttons ── */
 .stButton > button {
     border-radius: 8px !important;
@@ -503,6 +492,7 @@ def _plotly_clean_layout(fig, title=""):
         fig.update_layout(title=dict(text=title, x=0.01, font=dict(color="#0F172A", size=14)))
     return fig
 
+@st.cache_data(show_spinner=False)
 def chart_emotion_bar(df):
     counts = df["label_emosi"].value_counts()
     fig = go.Figure(go.Bar(
@@ -515,6 +505,7 @@ def chart_emotion_bar(df):
     fig.update_layout(showlegend=False, yaxis_title="Jumlah Jurnal")
     return fig
 
+@st.cache_data(show_spinner=False)
 def chart_sentiment_pie(df):
     grp = df["emotion_group"].value_counts()
     colors = [PRIMARY_COLOR if x == grp.idxmax() else "#758EC9" for x in grp.index]
@@ -526,13 +517,9 @@ def chart_sentiment_pie(df):
     _plotly_clean_layout(fig, "Distribusi Sentimen")
     return fig
 
-def chart_daily_trend(df):
-    daily = df.groupby("date").size().reset_index(name="count")
-    fig = px.line(daily, x="date", y="count", color_discrete_sequence=[PRIMARY_COLOR])
-    _plotly_clean_layout(fig, "Tren Jurnal Harian")
-    fig.update_traces(line_width=2, fill="tozeroy", fillcolor="rgba(68,100,173,0.12)")
-    return fig
 
+
+@st.cache_data(show_spinner=False)
 def chart_boxplot_text_length(df):
     avg_order = df.groupby("label_emosi")["jumlah_kata"].mean().sort_values(ascending=False).index.tolist()
     fig = px.box(df, x="label_emosi", y="jumlah_kata",
@@ -543,6 +530,7 @@ def chart_boxplot_text_length(df):
     fig.update_layout(showlegend=False)
     return fig
 
+@st.cache_data(show_spinner=False)
 def chart_avg_word_count(df):
     avg = df.groupby("label_emosi")["jumlah_kata"].mean().sort_values(ascending=False)
     fig = go.Figure(go.Bar(
@@ -555,35 +543,7 @@ def chart_avg_word_count(df):
     fig.update_layout(showlegend=False)
     return fig
 
-def chart_hourly_emotion(df):
-    hh = df.groupby(["hour", "label_emosi"]).size().reset_index(name="count")
-    fig = px.bar(hh, x="hour", y="count", color="label_emosi",
-                 color_discrete_map=EMOTION_COLORS, barmode="stack",
-                 labels={"hour": "Jam", "count": "Jumlah", "label_emosi": "Emosi"})
-    _plotly_clean_layout(fig, "Pola Penulisan per Jam")
-    return fig
-
-def chart_day_of_week(df):
-    d = df.groupby("day_of_week").size().reindex(DAY_ORDER, fill_value=0)
-    fig = go.Figure(go.Bar(
-        x=[DAY_ORDER_ID[dd] for dd in d.index], y=d.values,
-        marker_color=PRIMARY_COLOR, text=d.values, textposition="outside",
-    ))
-    _plotly_clean_layout(fig, "Distribusi per Hari")
-    return fig
-
-def chart_heatmap_day_hour(df):
-    pivot = df.groupby(["day_of_week", "hour"]).size().unstack(fill_value=0)
-    pivot = pivot.reindex(DAY_ORDER, fill_value=0)
-    fig = go.Figure(go.Heatmap(
-        z=pivot.values,
-        x=pivot.columns.tolist(),
-        y=[DAY_ORDER_ID[d] for d in pivot.index],
-        colorscale="Blues",
-    ))
-    _plotly_clean_layout(fig, "Heatmap Hari x Jam")
-    return fig
-
+@st.cache_data(show_spinner=False)
 def make_wordcloud_image(df, emotion):
     """Generate WordCloud as PIL Image, color-themed by emotion."""
     from wordcloud import WordCloud
@@ -605,6 +565,7 @@ def make_wordcloud_image(df, emotion):
     ).generate(text)
     return wc.to_image()
 
+@st.cache_data(show_spinner=False)
 def chart_top_words(df, emotion, top_n=15):
     sub = df[df["label_emosi"] == emotion]
     all_words = " ".join(sub["text_clean"].astype(str)).split()
@@ -667,13 +628,7 @@ def chart_lifestyle_boxplot(df_scr):
     fig.update_layout(showlegend=False)
     return fig
 
-def chart_screening_trend(df_scr):
-    t = df_scr.groupby(df_scr["timestamp"].dt.date).size().reset_index(name="count")
-    t.columns = ["date", "count"]
-    fig = px.line(t, x="date", y="count", color_discrete_sequence=[PRIMARY_COLOR])
-    _plotly_clean_layout(fig, "Tren Screening Harian")
-    fig.update_traces(fill="tozeroy", fillcolor="rgba(68,100,173,0.12)")
-    return fig
+
 
 def chart_sleep_category(df_scr):
     s = df_scr["sleep_category"].value_counts()
@@ -862,6 +817,7 @@ def chart_before_after_q3():
     fig.update_layout(barmode="group", yaxis=dict(range=[85, 100]), bargap=0.15, bargroupgap=0.05)
     return fig
 
+@st.cache_data(show_spinner=False)
 def chart_jurnal_word_count_hist(df, emotion):
     sub = df[df["label_emosi"] == emotion]
     fig = px.histogram(
@@ -1293,13 +1249,7 @@ elif st.session_state.page == "AI Lab":
                     </div>
                 """, unsafe_allow_html=True)
     
-            # Hotline jika High
-            if level == "High":
-                st.markdown(f"""<div class="hotline-box" style="margin-top:16px;">
-                    <strong>Kamu tidak sendirian.</strong> Pertimbangkan untuk menghubungi bantuan profesional:<br><br>
-                    {HOTLINE_INFO}
-                </div>""", unsafe_allow_html=True)
-    
+
             st.markdown("""<div class="disclaimer-box" style="margin-top:12px;">
                 <strong>Disclaimer:</strong> Hasil screening ini <em>bukan diagnosis klinis</em>.
                 Ini adalah alat skrining awal berbasis pola data. Selalu konsultasikan kondisimu dengan tenaga profesional kesehatan mental.

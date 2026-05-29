@@ -156,10 +156,3 @@ RECOMMENDATIONS = {
     "Neutral": ["Gunakan momen ini untuk istirahat yang berkualitas.", "Coba eksplorasi hobi baru atau aktivitas yang lama tidak dilakukan.", "Meditasi atau journaling bisa memperdalam kesadaran diri."],
 }
 
-HOTLINE_INFO = """
-📞 **Butuh Bantuan Segera?**
-- **Into The Light Indonesia**: 119 ext 8
-- **Yayasan Pulih**: (021) 788-42580
-- **RSJ Grhasia DIY**: (0274) 895231
-- **Kemenkes (Sejiwa)**: 119 ext 8
-"""

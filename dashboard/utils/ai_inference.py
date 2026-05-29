@@ -493,7 +493,7 @@ def _mock_predict_risk(answers: dict) -> dict:
     recs = {
         "Low":    ["Pertahankan rutinitas sehat yang sudah berjalan.", "Luangkan waktu untuk aktivitas yang menyenangkan.", "Tetap jaga koneksi sosial dengan orang terdekat."],
         "Medium": ["Pertimbangkan konsultasi dengan konselor atau psikolog.", "Prioritaskan kualitas tidur minimal 7 jam per malam.", "Batasi paparan media sosial dan berita negatif.", "Praktikkan mindfulness atau meditasi singkat harian."],
-        "High":   ["Sangat disarankan untuk segera berkonsultasi dengan profesional kesehatan mental.", "Ceritakan kondisimu kepada orang yang kamu percaya.", "Hubungi hotline kesehatan mental jika membutuhkan bantuan segera.", "Kurangi paparan stresor eksternal sebisa mungkin."],
+        "High":   ["Sangat disarankan untuk segera berkonsultasi dengan profesional kesehatan mental.", "Ceritakan kondisimu kepada orang yang kamu percaya.", "Kurangi paparan stresor eksternal sebisa mungkin."],
     }
 
     return {
@@ -664,7 +664,7 @@ def predict_risk(answers: dict) -> dict:
                 recs = {
                     "Low": ["Pertahankan gaya hidup sehat yang seimbang.", "Jaga koneksi sosial dengan keluarga dan teman."],
                     "Medium": ["Pertimbangkan untuk berkonsultasi dengan konselor.", "Prioritaskan tidur yang cukup dan batasi screen time.", "Praktikkan teknik relaksasi atau journaling."],
-                    "High": ["Sangat disarankan untuk segera berkonsultasi dengan profesional kesehatan mental.", "Ceritakan kondisimu kepada orang terdekat.", "Hubungi hotline kesehatan mental jika membutuhkan bantuan segera."]
+                    "High": ["Sangat disarankan untuk segera berkonsultasi dengan profesional kesehatan mental.", "Ceritakan kondisimu kepada orang terdekat."]
                 }
                 
                 return {
@@ -712,7 +712,7 @@ def predict_risk(answers: dict) -> dict:
 
                 recs = {"Low": ["Pertahankan gaya hidup sehat.", "Jaga koneksi sosial."],
                         "Medium": ["Pertimbangkan konsultasi psikolog.", "Prioritaskan tidur & istirahat."],
-                        "High": ["Segera konsultasi profesional kesehatan mental.", "Hubungi hotline jika perlu."]}
+                        "High": ["Segera konsultasi profesional kesehatan mental."]}
 
                 return {
                     "risk_level": level,
