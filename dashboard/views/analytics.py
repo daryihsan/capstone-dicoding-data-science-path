@@ -106,7 +106,7 @@ with tab_j:
             st.markdown("#### Sebaran Kata per Emosi")
             sel_wc_em = st.selectbox("Pilih Emosi untuk Detail Histogram", sel_em, 
                                      format_func=lambda x: f"{EMOTION_LABELS_ID.get(x,x)} ({x})", key="wc_em_selector")
-            st.plotly_chart(chart_jurnal_word_count_hist(df, sel_wc_em), use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(chart_jurnal_word_count_hist(df, sel_wc_em), use_container_width=True, config={'displayModeBar': True})
             
             st.markdown("""
             <div class="insight-box">
@@ -131,7 +131,7 @@ with tab_j:
                 else:
                     st.warning("Data tidak cukup untuk visualisasi kata.")
             with c8:
-                st.plotly_chart(chart_top_words(df, sel_wc_em3), use_container_width=True, config={'displayModeBar': False})
+                st.plotly_chart(chart_top_words(df, sel_wc_em3), use_container_width=True, config={'displayModeBar': True})
                 
             st.markdown("""
             <div class="insight-box">
