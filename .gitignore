@@ -25,4 +25,4 @@ ENV/
 .DS_Store
 Thumbs.db
 desktop.ini
-*.log
+*.log*.zip
