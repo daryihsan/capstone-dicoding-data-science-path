@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # RuangRasa — Dashboard 
 # CC26-PSU309 | Dary Ihsan Amanullah
 # ============================================================
@@ -566,7 +566,7 @@ def make_wordcloud_image(df, emotion):
     return wc.to_image()
 
 @st.cache_data(show_spinner=False)
-def chart_top_words(df, emotion, top_n=15):
+def _get_top_words_data(df, emotion, top_n=15):
     sub = df[df["label_emosi"] == emotion]
     all_words = " ".join(sub["text_clean"].astype(str)).split()
     stop = {"yang", "dan", "di", "ke", "dari", "ini", "itu", "tidak", "saya",
@@ -574,7 +574,10 @@ def chart_top_words(df, emotion, top_n=15):
             "sama", "bisa", "mau", "tapi", "kita", "mereka", "saja", "lagi",
             "aja", "ya", "yg", "gue", "gw", "lo", "nya", "ku", "mu"}
     cnt = Counter(w for w in all_words if w not in stop and len(w) > 2)
-    top = pd.DataFrame(cnt.most_common(top_n), columns=["Kata", "Frekuensi"])
+    return pd.DataFrame(cnt.most_common(top_n), columns=["Kata", "Frekuensi"])
+
+def chart_top_words(df, emotion, top_n=15):
+    top = _get_top_words_data(df, emotion, top_n)
     fig = px.bar(top.sort_values("Frekuensi"), x="Frekuensi", y="Kata",
                  orientation="h", color_discrete_sequence=[PRIMARY_COLOR])
     _plotly_clean_layout(fig, f"Top {top_n} Kata — {EMOTION_LABELS_ID.get(emotion, emotion)}")
