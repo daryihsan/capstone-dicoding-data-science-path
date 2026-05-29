@@ -59,12 +59,29 @@ html, body, [class*="css"] {
 }
 
 /* ── Sidebar (light, Notion-style) ── */
-[data-testid="stSidebar"], section[data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {
-    background: #FFFFFF !important;
+section[data-testid="stSidebar"] {
+    background-color: #FFFFFF !important;
     border-right: 1px solid #E2E8F0 !important;
 }
-[data-testid="stSidebar"] *, section[data-testid="stSidebar"] * {
+section[data-testid="stSidebar"] > div {
+    background-color: #FFFFFF !important;
+}
+section[data-testid="stSidebar"] * {
     color: #374151 !important;
+}
+[data-testid="stSidebarNav"] {
+    background-color: #FFFFFF !important;
+}
+[data-testid="stSidebarNav"] a {
+    color: #374151 !important;
+}
+[data-testid="stSidebarNav"] a:hover {
+    background-color: #F1F5F9 !important;
+    border-radius: 8px !important;
+}
+[data-testid="stSidebarNav"] a[aria-current="page"], [data-testid="stSidebarNav"] li[aria-selected="true"] {
+    background-color: #E2E8F0 !important;
+    border-radius: 8px !important;
 }
 [data-testid="stSidebar"] .stButton > button {
     display: inline-flex !important;
