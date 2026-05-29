@@ -74,14 +74,15 @@ section[data-testid="stSidebar"] * {
 }
 [data-testid="stSidebarNav"] a {
     color: #374151 !important;
+    margin: 4px 16px !important;
+    width: calc(100% - 32px) !important;
+    border-radius: 8px !important;
 }
 [data-testid="stSidebarNav"] a:hover {
     background-color: #F1F5F9 !important;
-    border-radius: 8px !important;
 }
 [data-testid="stSidebarNav"] a[aria-current="page"], [data-testid="stSidebarNav"] li[aria-selected="true"] {
     background-color: #E2E8F0 !important;
-    border-radius: 8px !important;
 }
 [data-testid="stSidebar"] .stButton > button {
     display: inline-flex !important;

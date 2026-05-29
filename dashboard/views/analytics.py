@@ -212,8 +212,19 @@ with tab_s:
             c1, c2 = st.columns(2)
             with c1:
                 delta = NB_AKURASI_FULL - NB_AKURASI_SEL
-                st.metric("Akurasi 50 Pertanyaan (Sebelum)", f"{NB_AKURASI_FULL:.1f}%")
-                st.metric("Akurasi 15 Pertanyaan (Sesudah)", f"{NB_AKURASI_SEL:.1f}%", delta=f"-{delta:.1f}%")
+                st.markdown(f"""
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 16px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); margin-bottom: 16px;">
+                    <div style="font-size: 14px; color: #64748B; margin-bottom: 4px;">Akurasi 50 Pertanyaan (Sebelum)</div>
+                    <div style="font-size: 1.8rem; font-weight: 700; color: #0F172A;">{NB_AKURASI_FULL:.1f}%</div>
+                </div>
+                <div style="background: #FFFFFF; border: 1px solid #E2E8F0; padding: 16px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                    <div style="font-size: 14px; color: #64748B; margin-bottom: 4px;">Akurasi 15 Pertanyaan (Sesudah)</div>
+                    <div style="display: flex; align-items: baseline; gap: 8px;">
+                        <div style="font-size: 1.8rem; font-weight: 700; color: #0F172A;">{NB_AKURASI_SEL:.1f}%</div>
+                        <div style="font-size: 1rem; color: #64748B; font-weight: 500;">↓ -{delta:.1f}%</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
             with c2:
                 st.metric("Pengurangan Pertanyaan", f"{NB_PENGURANGAN}%")
                 st.metric("Estimasi Waktu Pengisian", "6-8 menit (Sebelumnya ~20-25 menit)")
