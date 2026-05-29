@@ -369,10 +369,11 @@ div[data-testid="stDateInput"] div[data-baseweb="input"] {
     font-size: 0.9rem;
 }
 [data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"] {
-    background-color: #F8FAFC !important;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 8px !important;
-}
+      background-color: #F8FAFC !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 8px !important;
+      padding: 16px !important;
+  }
 </style>
 """, unsafe_allow_html=True)
 
