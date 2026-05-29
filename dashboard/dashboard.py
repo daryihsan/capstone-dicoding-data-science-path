@@ -59,11 +59,11 @@ html, body, [class*="css"] {
 }
 
 /* ── Sidebar (light, Notion-style) ── */
-[data-testid="stSidebar"] {
+[data-testid="stSidebar"], section[data-testid="stSidebar"], [data-testid="stSidebar"] > div:first-child {
     background: #FFFFFF !important;
     border-right: 1px solid #E2E8F0 !important;
 }
-[data-testid="stSidebar"] * {
+[data-testid="stSidebar"] *, section[data-testid="stSidebar"] * {
     color: #374151 !important;
 }
 [data-testid="stSidebar"] .stButton > button {
