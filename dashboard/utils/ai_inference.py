@@ -16,6 +16,9 @@ from utils.constants import (
     EMPATHY_RESPONSES, RECOMMENDATIONS, RISK_COLORS, RISK_LABELS,
 )
 
+import streamlit as st
+
+
 # ──────────────────────────────────────────────
 # LOADER MODEL (dengan graceful fallback)
 # ──────────────────────────────────────────────
@@ -99,16 +102,12 @@ MODEL_STATUS     = {"emotion": False, "screening": False}
 def _get_model_dir() -> str:
     return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models")
 
-def load_emotion_model():
-    """
-    Memuat model BiLSTM emosi dari folder jurnaling_model/.
-    Return None jika file tidak ada.
-    """
-    global _emotion_model, _tokenizer_obj, MODEL_STATUS
+@st.cache_resource(show_spinner=False)
+def _cached_load_emotion_model():
+    model, tokenizer = None, None
+    status = False
     if not _TF_AVAILABLE:
-        return None
-    if _emotion_model is not None:
-        return _emotion_model
+        return model, tokenizer, status
     try:
         import json as _json
         model_dir = os.path.join(_get_model_dir(), "jurnaling_model")
@@ -116,15 +115,13 @@ def load_emotion_model():
         weights_path = os.path.join(model_dir, "model.weights.h5")
 
         if not os.path.exists(config_path) or not os.path.exists(weights_path):
-            # Fallback ke file lama jika ada
             old_path = os.path.join(_get_model_dir(), "emotion_bilstm.keras")
             if os.path.exists(old_path):
-                _emotion_model = keras.models.load_model(old_path)
-                MODEL_STATUS["emotion"] = True
-                return _emotion_model
-            return None
+                model = keras.models.load_model(old_path)
+                status = True
+                return model, tokenizer, status
+            return model, tokenizer, status
 
-        # Load model dari config.json + weights
         with open(config_path, "r", encoding="utf-8") as f:
             config = _json.load(f)
 
@@ -132,20 +129,18 @@ def load_emotion_model():
             "FeatureAttention": FeatureAttention,
             "TemporalContextAttention": TemporalContextAttention,
         }
-        _emotion_model = keras.models.model_from_json(
+        model = keras.models.model_from_json(
             _json.dumps(config), custom_objects=custom_objects
         )
-        _emotion_model.load_weights(weights_path)
-        MODEL_STATUS["emotion"] = True
+        model.load_weights(weights_path)
+        status = True
 
-        # Load tokenizer dari pkl file
         tok_path = os.path.join(model_dir, "journaling_tokenizer.pkl")
         if os.path.exists(tok_path):
             import pickle as _pickle
             with open(tok_path, "rb") as f:
-                _tokenizer_obj = _pickle.load(f)
+                tokenizer = _pickle.load(f)
         else:
-            # Fallback check di metadata
             meta_path = os.path.join(model_dir, "metadata.json")
             if os.path.exists(meta_path):
                 with open(meta_path, "r", encoding="utf-8") as f:
@@ -154,21 +149,29 @@ def load_emotion_model():
                 if tok_path_meta and os.path.exists(tok_path_meta):
                     from tensorflow.keras.preprocessing.text import tokenizer_from_json
                     with open(tok_path_meta, "r", encoding="utf-8") as f:
-                        _tokenizer_obj = tokenizer_from_json(f.read())
-        return _emotion_model
+                        tokenizer = tokenizer_from_json(f.read())
+        return model, tokenizer, status
     except Exception:
-        return None
+        return model, tokenizer, status
 
-def load_screening_model():
-    """Memuat model DNN screening risiko. Return None jika file tidak ada."""
-    global _screening_model, _scaler_obj, MODEL_STATUS
+def load_emotion_model():
+    global _emotion_model, _tokenizer_obj, MODEL_STATUS
+    if _emotion_model is not None:
+        return _emotion_model
+    model, tokenizer, status = _cached_load_emotion_model()
+    _emotion_model = model
+    _tokenizer_obj = tokenizer
+    MODEL_STATUS["emotion"] = status
+    return _emotion_model
+
+@st.cache_resource(show_spinner=False)
+def _cached_load_screening_model():
+    model, scaler = None, None
+    status = False
     if not _TF_AVAILABLE:
-        return None
-    if _screening_model is not None:
-        return _screening_model
+        return model, scaler, status
     try:
         import pickle
-        # Cek folder screening_model terlebih dahulu, lalu fallback ke file screening_risk.keras
         model_path = os.path.join(_get_model_dir(), "screening_model")
         if not os.path.exists(model_path):
             model_path = os.path.join(_get_model_dir(), "screening_risk.keras")
@@ -176,16 +179,26 @@ def load_screening_model():
         scaler_path = os.path.join(_get_model_dir(), "scaler.pkl")
         
         if not os.path.exists(model_path):
-            return None
+            return model, scaler, status
             
-        _screening_model = keras.models.load_model(model_path, custom_objects={"FeatureAttention": FeatureAttention})
+        model = keras.models.load_model(model_path, custom_objects={"FeatureAttention": FeatureAttention})
         if os.path.exists(scaler_path):
             with open(scaler_path, "rb") as f:
-                _scaler_obj = pickle.load(f)
-        MODEL_STATUS["screening"] = True
-        return _screening_model
+                scaler = pickle.load(f)
+        status = True
+        return model, scaler, status
     except Exception:
-        return None
+        return model, scaler, status
+
+def load_screening_model():
+    global _screening_model, _scaler_obj, MODEL_STATUS
+    if _screening_model is not None:
+        return _screening_model
+    model, scaler, status = _cached_load_screening_model()
+    _screening_model = model
+    _scaler_obj = scaler
+    MODEL_STATUS["screening"] = status
+    return _screening_model
 
 # ──────────────────────────────────────────────
 # TEXT PREPROCESSING

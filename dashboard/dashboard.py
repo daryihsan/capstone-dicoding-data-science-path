@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # RuangRasa — Dashboard 
 # CC26-PSU309 | Dary Ihsan Amanullah
 # ============================================================
@@ -15,15 +15,17 @@ import pandas as pd
 
 # GroupBy compatibility patch for Pandas 2.2+ / Plotly Express compatibility
 try:
-    orig_get_group = pd.core.groupby.groupby.GroupBy.get_group
-    def _patched_get_group(self, name, *args, **kwargs):
-        try:
-            return orig_get_group(self, name, *args, **kwargs)
-        except KeyError:
-            if not isinstance(name, tuple):
-                return orig_get_group(self, (name,), *args, **kwargs)
-            raise
-    pd.core.groupby.groupby.GroupBy.get_group = _patched_get_group
+    if not hasattr(pd.core.groupby.groupby.GroupBy, "_is_patched"):
+        orig_get_group = pd.core.groupby.groupby.GroupBy.get_group
+        def _patched_get_group(self, name, *args, **kwargs):
+            try:
+                return orig_get_group(self, name, *args, **kwargs)
+            except KeyError:
+                if not isinstance(name, tuple):
+                    return orig_get_group(self, (name,), *args, **kwargs)
+                raise
+        pd.core.groupby.groupby.GroupBy.get_group = _patched_get_group
+        pd.core.groupby.groupby.GroupBy._is_patched = True
 except Exception:
     pass
 
