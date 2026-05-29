@@ -66,6 +66,11 @@ section[data-testid="stSidebar"] {
 section[data-testid="stSidebar"] > div {
     background-color: #FFFFFF !important;
 }
+section[data-testid="stSidebar"] .block-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-top: 32px !important;
+}
 section[data-testid="stSidebar"] * {
     color: #374151 !important;
 }
@@ -226,32 +231,34 @@ strong { color: #0F172A !important; font-weight: 600 !important; }
 
 /* ── st.metric ── */
 [data-testid="stMetric"] {
-    background: #FFFFFF;
-    border-radius: 8px;
-    padding: 14px 16px;
-    border: 1px solid #E2E8F0;
-    border-top: 2px solid #2563EB;
-}
-[data-testid="stMetric"] > div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-}
-[data-testid="stMetricLabel"] { 
-    width: 100%; 
-    color: #64748B !important; 
-    font-size: 0.8rem !important; 
-    font-weight: 500 !important; 
-}
-[data-testid="stMetricValue"] { 
-    margin-right: 12px;
-    font-size: 1.6rem !important; 
-    font-weight: 700 !important; 
-    color: #0F172A !important; 
-}
-[data-testid="stMetricDelta"] { 
-    color: #64748B !important; 
-}
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 14px 16px;
+      border: 1px solid #E2E8F0;
+      border-top: 2px solid #2563EB;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+  }
+  [data-testid="stMetricLabel"] { 
+      width: 100%; 
+      color: #64748B !important; 
+      font-size: 0.8rem !important; 
+      font-weight: 500 !important; 
+      margin-bottom: 4px;
+  }
+  [data-testid="stMetricValue"] { 
+      margin-right: 12px;
+      font-size: 1.6rem !important; 
+      font-weight: 700 !important; 
+      color: #0F172A !important; 
+      display: inline-block !important;
+  }
+  [data-testid="stMetricDelta"] { 
+      color: #64748B !important; 
+      display: inline-flex !important;
+      align-items: center !important;
+  }
 
 /* ── Journal entry ── */
 .journal-entry {
