@@ -117,7 +117,7 @@ def chart_sleep_category(df_scr):
     fig = px.bar(x=s.index.astype(str), y=s.values,
                  color_discrete_sequence=["#4464AD", "#758EC9", "#95A5A6"],
                  labels={"x": "Kategori Tidur", "y": "Jumlah"})
-    _plotly_clean_layout(fig, "Kualitas Tidur Responden")
+    _plotly_clean_layout(fig, "Kualitas Tidur")
     return fig
 
 def chart_class_imbalance():

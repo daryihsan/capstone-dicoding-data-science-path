@@ -32,7 +32,7 @@ st.markdown(f"""
         RuangRasa — Analytics Platform
     </h1>
     <p style='color:#64748b; font-size:0.95rem; margin:0;'>
-        Dashboard riset & analitik kesehatan mental berbasis AI. Eksplorasi insight dari <strong>9.700+ data jurnal emosi</strong>
+        Dashboard riset & analitik kesehatan mental berbasis AI. Eksplorasi insight dari <strong>9.700 data jurnal emosi</strong>
         dan <strong>10.000 data screening</strong>, lengkap dengan demo model AI secara interaktif.
     </p>
 </div>
@@ -145,6 +145,6 @@ with q2:
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("""<div class="disclaimer-box">
     <strong>Catatan Riset:</strong> Data yang ditampilkan di halaman ini bersumber dari dataset penelitian
-    (<strong>9.700+ jurnal emosi</strong> dan <strong>10.000 data screening</strong>).
+    (<strong>9.700 jurnal emosi</strong> dan <strong>10.000 data screening</strong>).
     Demo model AI tersedia di halaman <strong>AI Lab</strong>.
 </div>""", unsafe_allow_html=True)

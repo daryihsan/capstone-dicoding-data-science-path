@@ -81,9 +81,9 @@ with tab_j:
         with st.expander("Q1 · Proporsi & Distribusi Emosi", expanded=True):
             c1, c2 = st.columns(2)
             with c1: 
-                st.plotly_chart(chart_sentiment_pie(df), use_container_width=True)
+                st.plotly_chart(chart_sentiment_pie(df), use_container_width=True, config={'displayModeBar': False})
             with c2: 
-                st.plotly_chart(chart_emotion_bar(df), use_container_width=True)
+                st.plotly_chart(chart_emotion_bar(df), use_container_width=True, config={'displayModeBar': False})
             
             st.markdown("""
             <div class="insight-box">
@@ -99,14 +99,14 @@ with tab_j:
         with st.expander("Q2 · Karakteristik Panjang Tulisan (Word Count)", expanded=False):
             c3, c4 = st.columns(2)
             with c3: 
-                st.plotly_chart(chart_boxplot_text_length(df), use_container_width=True)
+                st.plotly_chart(chart_boxplot_text_length(df), use_container_width=True, config={'displayModeBar': False})
             with c4: 
-                st.plotly_chart(chart_avg_word_count(df), use_container_width=True)
+                st.plotly_chart(chart_avg_word_count(df), use_container_width=True, config={'displayModeBar': False})
             
             st.markdown("#### Sebaran Kata per Emosi")
             sel_wc_em = st.selectbox("Pilih Emosi untuk Detail Histogram", sel_em, 
                                      format_func=lambda x: f"{EMOTION_LABELS_ID.get(x,x)} ({x})", key="wc_em_selector")
-            st.plotly_chart(chart_jurnal_word_count_hist(df, sel_wc_em), use_container_width=True)
+            st.plotly_chart(chart_jurnal_word_count_hist(df, sel_wc_em), use_container_width=True, config={'displayModeBar': False})
             
             st.markdown("""
             <div class="insight-box">
@@ -131,7 +131,7 @@ with tab_j:
                 else:
                     st.warning("Data tidak cukup untuk visualisasi kata.")
             with c8:
-                st.plotly_chart(chart_top_words(df, sel_wc_em3), use_container_width=True)
+                st.plotly_chart(chart_top_words(df, sel_wc_em3), use_container_width=True, config={'displayModeBar': False})
                 
             st.markdown("""
             <div class="insight-box">
@@ -167,9 +167,9 @@ with tab_s:
         with st.expander("Q1 · Keandalan Sistem & Kesiapan Data", expanded=True):
             c1, c2 = st.columns(2)
             with c1: 
-                st.plotly_chart(chart_class_imbalance(), use_container_width=True)
+                st.plotly_chart(chart_class_imbalance(), use_container_width=True, config={'displayModeBar': False})
             with c2: 
-                st.plotly_chart(chart_model_performance(), use_container_width=True)
+                st.plotly_chart(chart_model_performance(), use_container_width=True, config={'displayModeBar': False})
                 
             st.markdown("""
             <div class="insight-box">
@@ -185,9 +185,9 @@ with tab_s:
         with st.expander("Q2 · 15 Faktor Risiko Utama", expanded=False):
             c3, c4 = st.columns(2)
             with c3: 
-                st.plotly_chart(chart_faktor_risiko_utama(), use_container_width=True)
+                st.plotly_chart(chart_faktor_risiko_utama(), use_container_width=True, config={'displayModeBar': False})
             with c4: 
-                st.plotly_chart(chart_stress_radar(df_scr), use_container_width=True)
+                st.plotly_chart(chart_stress_radar(df_scr), use_container_width=True, config={'displayModeBar': False})
                 
             st.markdown("""
             <div class="insight-box">
@@ -207,7 +207,7 @@ with tab_s:
             """, unsafe_allow_html=True)
         
         with st.expander("Q3 · Efisiensi UX Kuesioner", expanded=False):
-            st.plotly_chart(chart_before_after_q3(), use_container_width=True)
+            st.plotly_chart(chart_before_after_q3(), use_container_width=True, config={'displayModeBar': False})
             
             c1, c2 = st.columns(2)
             with c1:

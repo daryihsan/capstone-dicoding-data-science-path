@@ -124,7 +124,7 @@ with tab_emosi:
                         _plotly_clean_layout(fig_prob, "Distribusi Probabilitas Emosi")
                         fig_prob.update_layout(height=220, margin=dict(l=0, r=40, t=35, b=0),
                                                xaxis=dict(range=[0, 110]))
-                        st.plotly_chart(fig_prob, use_container_width=True)
+                        st.plotly_chart(fig_prob, use_container_width=True, config={'displayModeBar': False})
 
                     st.markdown(f"""
                         <div style="background:rgba(0,0,0,0.02); border-radius:8px; padding:14px 16px; margin-bottom:12px; border: 1px solid #e2e8f0;">
@@ -294,7 +294,7 @@ with tab_screening:
                     height=280, margin=dict(l=30, r=30, t=30, b=30),
                     title=dict(text="Breakdown per Kategori", font=dict(size=13, color="#0f172a")),
                 )
-                st.plotly_chart(fig_radar, use_container_width=True)
+                st.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
 
             # Rekomendasi
             st.markdown('<div style="font-size:0.82rem; color:#64748b; text-transform:uppercase; margin-bottom:10px;">Rekomendasi Personal</div>', unsafe_allow_html=True)
