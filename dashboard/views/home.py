@@ -112,10 +112,10 @@ st.markdown("<br>", unsafe_allow_html=True)
 col_a, col_b = st.columns(2)
 with col_a:
     if has_journal:
-        st.plotly_chart(chart_sentiment_pie(df_all), use_container_width=True, theme=None)
+        st.plotly_chart(chart_sentiment_pie(df_all), use_container_width=True)
 with col_b:
     if has_screen:
-        st.plotly_chart(chart_sleep_category(df_screening_all), use_container_width=True, theme=None)
+        st.plotly_chart(chart_sleep_category(df_screening_all), use_container_width=True)
 
 # ── Insight AI ──
 if has_journal:
