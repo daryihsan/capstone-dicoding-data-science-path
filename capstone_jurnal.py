@@ -1101,7 +1101,6 @@ Dalam pipeline data preparation ini, **fitur-fitur yang dihasilkan selama proses
 | `is_personal` | Deteksi kata ganti orang pertama | Hanya untuk filter journaling context, bukan fitur model |
 | `english_count` | Deteksi code-switching berat | Hanya untuk eliminasi data noise, bukan fitur prediktif |
 | `jumlah_kata` | Analisis EDA panjang teks | Hanya untuk insight statistik, bukan input model |
-| `hour`, `day_of_week` | Simulasi temporal dashboard | Hanya untuk visualisasi Streamlit, bukan fitur training |
 
 ---
 
@@ -1197,24 +1196,6 @@ Tabel ini menjelaskan setiap fitur (kolom) yang terdapat pada dataset akhir sete
 | `timestamp` | Datetime | Waktu | Waktu dan tanggal saat jurnal atau curhatan tersebut direkam. |
 | `label_emosi` | String / Object | Target | Label apakah teks mengandung emosi marah, senang, takut, sayang, netral, atau sedih (6 kelas). |
 | `label_encoded` | Integer | Target | Label emosi dalam bentuk angka (0-5). |
-
-Simulasi Komponen Dashboard Analitik Streamlit
-"""
-
-df_eda['hour'] = pd.to_datetime(df_eda['timestamp']).dt.hour
-df_eda['day_of_week'] = pd.to_datetime(df_eda['timestamp']).dt.day_name()
-
-# Hourly distribution of each emotion
-hourly_emotion = df_eda.groupby(['hour', 'label_emosi']).size().unstack(fill_value=0)
-hourly_emotion.plot(kind='line')
-plt.title('Kapan User Menulis Jurnal Berdasarkan Emosi?')
-plt.ylabel('Jumlah Jurnal')
-plt.xlabel('Jam (0-23)')
-plt.show()
-
-"""Catatan:
-
-Grafik ini merupakan simulasi data time-series untuk memastikan arsitektur komponen visualisasi Streamlit berjalan lancar ketika nanti menerima data riil dari pengguna.
 
 ## Export Data
 """
