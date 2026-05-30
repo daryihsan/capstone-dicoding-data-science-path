@@ -25,4 +25,10 @@ ENV/
 .DS_Store
 Thumbs.db
 desktop.ini
-*.log*.zip
+*.log
+
+# File AI Engineer & Dokumen Rahasia
+01_screening_model.ipynb
+02_journaling_model.ipynb
+Project Plan*.pdf
+*.zip

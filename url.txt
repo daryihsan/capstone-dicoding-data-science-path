@@ -1,0 +1,1 @@
+https://capstone-dicoding-data-science-path.streamlit.app/
