@@ -1,6 +1,6 @@
 # 🧠 RuangRasa: Mental Well-being Analytics & AI Platform ✨
 
-Selamat datang di repositori **RuangRasa**! Proyek ini merupakan hasil akhir (*Capstone Project*) untuk kelulusan program studi independen **Dicoding: Data Science Path** (Cohort CC26-PSU309).
+Selamat datang di repositori **RuangRasa**! Proyek ini merupakan hasil akhir (*Capstone Project*) untuk kelulusan program studi independen **Dicoding: Data Science Path** (Team Capstone CC26-PSU309).
 
 Dashboard interaktif ini dibangun menggunakan **Streamlit** untuk memvisualisasikan data eksplorasi terkait kesehatan mental, yang bersumber dari **9.700 data jurnal emosi tekstual** dan **10.000 data rekam evaluasi screening**. Selain analitik, platform ini juga mendemonstrasikan implementasi **Artificial Intelligence (NLP)** untuk analisis sentimen dan klasifikasi emosi secara *real-time*.
 
@@ -23,7 +23,7 @@ Proyek ini dirancang untuk menjawab serangkaian pertanyaan strategis yang dibagi
   - `utils/`: Skrip pendukung (*helper*) untuk pemrosesan data, konfigurasi grafik Plotly, dan AI *inference logic*.
   - `models/`: Tempat menyimpan file *pre-trained* model Machine Learning (`.h5` / arsitektur jaringan saraf tiruan).
   - `data/`: Dataset *clean* yang telah melalui proses wrangling/cleaning dan siap disajikan ke dalam visualisasi.
-- `capstone_jurnal.ipynb` & `capstone_screening.ipynb`: Berkas Jupyter Notebook yang mencakup keseluruhan alur kerja *Data Science* (mulai dari *Gathering*, *Wrangling*, EDA, hingga mendefinisikan pertanyaan bisnis). *(Catatan: Proses pengembangan model AI dipisah pada file `01_screening_model` & `02_journaling_model`)*.
+- `capstone_jurnal.ipynb` & `capstone_screening.ipynb`: Berkas Jupyter Notebook yang mencakup keseluruhan alur kerja *Data Science* (mulai dari *Gathering*, *Wrangling*, EDA, hingga mendefinisikan pertanyaan bisnis). *(Catatan: Proses pengembangan model AI dilakukan oleh tim AI Engineer`)*.
 
 ## 🛠️ Setup Environment
 
@@ -31,20 +31,20 @@ Gunakan panduan di bawah ini untuk menyiapkan *environment* pengembangan di komp
 
 ### Menggunakan Anaconda (Rekomendasi)
 ```bash
-conda create --name capstone python=3.12
-conda activate capstone
+conda create --name .env python=3.12
+conda activate .env
 pip install -r requirements.txt
 ```
 
 ### Menggunakan Python venv
 ```bash
-python -m venv capstone
+python -m venv .env
 
 # Mengaktifkan environment (Windows PowerShell):
-capstone\Scripts\Activate.ps1
+.env\Scripts\Activate.ps1
 
 # Mengaktifkan environment (Mac/Linux):
-source capstone/bin/activate
+source .env/bin/activate
 
 pip install -r requirements.txt
 ```
