@@ -2,7 +2,7 @@
 
 Selamat datang di repositori **RuangRasa**! Proyek ini merupakan hasil akhir (*Capstone Project*) untuk kelulusan program studi independen **Dicoding: Data Science Path** (Team Capstone CC26-PSU309).
 
-Dashboard interaktif ini dibangun menggunakan **Streamlit** untuk memvisualisasikan data eksplorasi terkait kesehatan mental, yang bersumber dari **9.700 data jurnal emosi tekstual** dan **10.000 data rekam evaluasi screening**. Selain analitik, platform ini juga mendemonstrasikan implementasi **Artificial Intelligence (NLP)** untuk analisis sentimen dan klasifikasi emosi secara *real-time*.
+Dashboard interaktif ini dibangun menggunakan **Streamlit** untuk memvisualisasikan data eksplorasi terkait kesehatan mental, yang bersumber dari **9.700 data jurnal emosi tekstual** dan **10.000 data rekam evaluasi screening**. Selain analitik, platform ini juga mendemonstrasikan implementasi **Artificial Intelligence (NLP)** untuk analisis jurnal dan memprediksi level risiko.
 
 ## 🎯 Business Questions Answered
 Proyek ini dirancang untuk menjawab serangkaian pertanyaan strategis yang dibagi ke dalam dua domain utama:
